@@ -32,7 +32,7 @@ class _ViewSubjectState extends State<ViewSubject> {
       future: myDatabase.getMonHoc(),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
-          return CircularProgressIndicator(); // Hiển thị tiến trình tải
+          return const CircularProgressIndicator(); // Hiển thị tiến trình tải
         } else if (snapshot.hasError) {
           return Text('Đã xảy ra lỗi: ${snapshot.error}');
         } else {
@@ -127,7 +127,7 @@ class _ViewSubjectState extends State<ViewSubject> {
     showDialog(
       context: context,
       builder: (_) => AlertDialog(
-        title: Text(
+        title: const Text(
           'Chỉnh sửa môn học',
           textAlign: TextAlign.center,
           style: TextStyle(
@@ -142,7 +142,6 @@ class _ViewSubjectState extends State<ViewSubject> {
             TextFormField(
               decoration: const InputDecoration(
                 labelText: 'Mã môn học',
-                hintText: 'Nhập mã môn học',
               ),
               initialValue: selectedMaMonHoc,
               enabled: false,

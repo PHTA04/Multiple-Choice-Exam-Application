@@ -134,6 +134,18 @@ class MySqlDatabase {
     }
   }
 
+  Future<List<Map<String, dynamic>>> getChuDe() async {
+    try {
+      var results = await _connection.query('SELECT ChuDe.maChuDe, ChuDe.tenChuDe, MonHoc.tenMonHoc FROM ChuDe INNER JOIN MonHoc ON ChuDe.maMonHoc = MonHoc.maMonHoc');
+      print(results);
+      return results.map((row) => row.fields).toList();
+    } catch (error, stackTrace) {
+      print('Lỗi khi lấy danh sách môn học: $error');
+      print('StackTrace: $stackTrace');
+      return [];
+    }
+  }
+
   Future<void> close() async {
     await _connection.close();
   }
