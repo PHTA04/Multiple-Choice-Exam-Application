@@ -19,16 +19,25 @@ class _ViewTopicState extends State<ViewTopic> {
   List<String> tenMonHocList = [];
   bool updateData = false;
   bool isOpenDialog = false;
+  bool _isDatabaseConnected = false;
 
   @override
   void initState() {
     super.initState();
     final databaseProvider = Provider.of<DatabaseProvider>(context, listen: false);
-    databaseProvider.connectToDatabase();
+    databaseProvider.connectToDatabase().then((_) {
+      setState(() {
+        _isDatabaseConnected = true;
+      });
+    });
   }
 
   @override
   Widget build(BuildContext context) {
+    if (!_isDatabaseConnected) {
+      return const CircularProgressIndicator();
+    }
+
     final databaseProvider = Provider.of<DatabaseProvider>(context);
     var myDatabase = databaseProvider.database;
 
@@ -43,7 +52,6 @@ class _ViewTopicState extends State<ViewTopic> {
           } else if (snapshot.hasError) {
             return Text('Đã xảy ra lỗi: ${snapshot.error}');
           } else {
-            // Gọi cả hai phương thức thành công
             chuDeList = snapshot.data![0] ?? [];
             tenMonHocList = snapshot.data![1] ?? [];
           }

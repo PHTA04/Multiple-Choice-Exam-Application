@@ -16,16 +16,25 @@ class _CreateTopicState extends State<CreateTopic> {
   TextEditingController tenChuDeController = TextEditingController();
   List<String> tenMonHocList = []; // Danh sách tên môn học
   String selectedMonHoc = ''; // Môn học được chọn
+  bool _isDatabaseConnected = false;
 
   @override
   void initState() {
     super.initState();
     final databaseProvider = Provider.of<DatabaseProvider>(context, listen: false);
-    databaseProvider.connectToDatabase();
+    databaseProvider.connectToDatabase().then((_) {
+      setState(() {
+        _isDatabaseConnected = true;
+      });
+    });
   }
 
   @override
   Widget build(BuildContext context) {
+    if (!_isDatabaseConnected) {
+      return const CircularProgressIndicator();
+    }
+
     final databaseProvider = Provider.of<DatabaseProvider>(context);
     var myDatabase = databaseProvider.database;
 
