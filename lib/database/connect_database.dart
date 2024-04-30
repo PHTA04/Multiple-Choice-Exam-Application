@@ -70,7 +70,7 @@ class MySqlDatabase {
     }
   }
 
-  Future<String> updateMonHoc(String maMonHoc, String tenMonHoc) async {
+  Future<String> updateSubject(String maMonHoc, String tenMonHoc) async {
     try {
       final result = await _connection.query(
         'SELECT COUNT(*) as count FROM MonHoc WHERE maMonHoc = ?',
@@ -92,7 +92,7 @@ class MySqlDatabase {
     }
   }
 
-  Future<String> deleteMonHoc(String maMonHoc) async {
+  Future<String> deleteSubject(String maMonHoc) async {
     try {
       final result = await _connection.query(
         'SELECT COUNT(*) as count FROM MonHoc WHERE maMonHoc = ?',
@@ -143,6 +143,56 @@ class MySqlDatabase {
       print('Lỗi khi lấy danh sách môn học: $error');
       print('StackTrace: $stackTrace');
       return [];
+    }
+  }
+
+  Future<String> updateTopic(String maChuDe, String tenChuDe, String tenMonHoc) async {
+    try {
+      final result = await _connection.query(
+        'SELECT COUNT(*) as count FROM ChuDe WHERE maChuDe = ?',
+        [maChuDe],
+      );
+
+      final count = result.first['count'] as int;
+      if (count == 0) {
+        return 'Mã chủ đề không tồn tại.';
+      }
+
+      final monHocResult = await _connection.query(
+        'SELECT maMonHoc FROM MonHoc WHERE tenMonHoc = ?',
+        [tenMonHoc],
+      );
+      final maMonHoc = monHocResult.first['maMonHoc'];
+
+      await _connection.query(
+        'UPDATE ChuDe SET tenChuDe = ?, maMonHoc = ? WHERE maChuDe = ?',
+        [tenChuDe, maMonHoc, maChuDe],
+      );
+      return 'Cập nhật chủ đề thành công.';
+    } catch (error) {
+      return 'Cập nhật chủ đề thất bại do: $error';
+    }
+  }
+
+  Future<String> deleteTopic(String maChuDe) async {
+    try {
+      final result = await _connection.query(
+        'SELECT COUNT(*) as count FROM ChuDe WHERE maChuDe = ?',
+        [maChuDe],
+      );
+
+      final count = result.first['count'] as int;
+      if (count == 0) {
+        return 'Mã chủ đề không tồn tại.';
+      }
+
+      await _connection.query(
+        'DELETE FROM ChuDe WHERE maChuDe = ?',
+        [maChuDe],
+      );
+      return 'Chủ đề đã được xóa thành công.';
+    } catch (error) {
+      return 'Xóa chủ đề thất bại do: $error';
     }
   }
 

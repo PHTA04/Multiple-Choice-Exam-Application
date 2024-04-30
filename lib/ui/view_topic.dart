@@ -18,7 +18,7 @@ class _ViewTopicState extends State<ViewTopic> {
   String selectedTenChuDe = '';
   List<String> tenMonHocList = [];
   bool updateData = false;
-
+  bool isOpenDialog = false;
 
   @override
   void initState() {
@@ -113,21 +113,14 @@ class _ViewTopicState extends State<ViewTopic> {
     );
   }
 
-  void showMessage(String message) {
-    Fluttertoast.showToast(
-      msg: message,
-      toastLength: Toast.LENGTH_SHORT,
-      gravity: ToastGravity.BOTTOM,
-      timeInSecForIosWeb: 1,
-      backgroundColor: Colors.black87,
-      textColor: Colors.white,
-      fontSize: 16.0,
-    );
-  }
-
   void showEditDialog() {
+    if (isOpenDialog) {
+      return;
+    }
+
     showDialog(
       context: context,
+      barrierDismissible: false,
       builder: (_) => AlertDialog(
         title: const Text(
           'Chỉnh sửa môn học',
@@ -148,9 +141,8 @@ class _ViewTopicState extends State<ViewTopic> {
               initialValue: selectMaChuDe,
               enabled: false,
             ),
-
             Expanded(
-              flex: 1,
+              flex: 0,
               child: DropdownButton2<String>(
                 isExpanded: true,
                 hint: Text(
@@ -164,6 +156,8 @@ class _ViewTopicState extends State<ViewTopic> {
                   setState(() {
                     selectedTenMonHoc = selected!;
                   });
+                  closeEditDialog();
+                  showEditDialog();
                 },
                 items: tenMonHocList.isNotEmpty
                     ? tenMonHocList.map((String monHoc) {
@@ -182,8 +176,6 @@ class _ViewTopicState extends State<ViewTopic> {
                 ),
               ),
             ),
-
-
             TextField(
               decoration: const InputDecoration(
                 labelText: 'Tên chủ đề',
@@ -202,25 +194,72 @@ class _ViewTopicState extends State<ViewTopic> {
           TextButton(
             child: const Text('Delete'),
             onPressed: () {
-              // deleteMonHoc();
+              deleteChuDe();
               Navigator.of(context).pop();
+              isOpenDialog = false;
             },
           ),
           TextButton(
             child: const Text('Update'),
             onPressed: () {
-              // updateMonHoc();
+              updateChuDe();
               Navigator.of(context).pop();
+              isOpenDialog = false;
             },
           ),
           TextButton(
             child: const Text('Cancel'),
             onPressed: () {
               Navigator.of(context).pop();
+              isOpenDialog = false;
             },
           ),
         ],
       ),
     );
+
+    isOpenDialog = true;
   }
+
+  void showMessage(String message) {
+    Fluttertoast.showToast(
+      msg: message,
+      toastLength: Toast.LENGTH_SHORT,
+      gravity: ToastGravity.BOTTOM,
+      timeInSecForIosWeb: 1,
+      backgroundColor: Colors.black87,
+      textColor: Colors.white,
+      fontSize: 16.0,
+    );
+  }
+
+  void closeEditDialog() {
+    if (isOpenDialog) {
+      Navigator.of(context).pop();
+      isOpenDialog = false;
+    }
+  }
+
+  void updateChuDe() {
+    final databaseProvider = Provider.of<DatabaseProvider>(context, listen: false);
+    final myDatabase = databaseProvider.database;
+    myDatabase.updateTopic(selectMaChuDe, selectedTenChuDe, selectedTenMonHoc).then((message) {
+      showMessage(message);
+      setState(() {
+        updateData = true;
+      });
+    });
+  }
+
+  void deleteChuDe() {
+    final databaseProvider = Provider.of<DatabaseProvider>(context, listen: false);
+    final myDatabase = databaseProvider.database;
+    myDatabase.deleteTopic(selectMaChuDe).then((message) {
+      showMessage(message);
+      setState(() {
+        updateData = true;
+      });
+    });
+  }
+
 }

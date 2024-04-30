@@ -111,21 +111,10 @@ class _ViewSubjectState extends State<ViewSubject> {
     );
   }
 
-  void showMessage(String message) {
-    Fluttertoast.showToast(
-      msg: message,
-      toastLength: Toast.LENGTH_SHORT,
-      gravity: ToastGravity.BOTTOM,
-      timeInSecForIosWeb: 1,
-      backgroundColor: Colors.black87,
-      textColor: Colors.white,
-      fontSize: 16.0,
-    );
-  }
-
   void showEditDialog() {
     showDialog(
       context: context,
+      barrierDismissible: false, // Nhấn bên ngoài Dialog sẽ không bị tắt
       builder: (_) => AlertDialog(
         title: const Text(
           'Chỉnh sửa môn học',
@@ -186,10 +175,22 @@ class _ViewSubjectState extends State<ViewSubject> {
     );
   }
 
+  void showMessage(String message) {
+    Fluttertoast.showToast(
+      msg: message,
+      toastLength: Toast.LENGTH_SHORT,
+      gravity: ToastGravity.BOTTOM,
+      timeInSecForIosWeb: 1,
+      backgroundColor: Colors.black87,
+      textColor: Colors.white,
+      fontSize: 16.0,
+    );
+  }
+
   void deleteMonHoc() {
     final databaseProvider = Provider.of<DatabaseProvider>(context, listen: false);
     final myDatabase = databaseProvider.database;
-    myDatabase.deleteMonHoc(selectedMaMonHoc).then((message) {
+    myDatabase.deleteSubject(selectedMaMonHoc).then((message) {
       showMessage(message);
       setState(() {
         updateData = true;
@@ -200,7 +201,7 @@ class _ViewSubjectState extends State<ViewSubject> {
   void updateMonHoc() {
     final databaseProvider = Provider.of<DatabaseProvider>(context, listen: false);
     final myDatabase = databaseProvider.database;
-    myDatabase.updateMonHoc(selectedMaMonHoc, selectedTenMonHoc).then((message) {
+    myDatabase.updateSubject(selectedMaMonHoc, selectedTenMonHoc).then((message) {
       showMessage(message);
       setState(() {
         updateData = true;
