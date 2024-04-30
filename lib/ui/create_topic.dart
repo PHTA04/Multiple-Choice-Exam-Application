@@ -134,7 +134,6 @@ class _CreateTopicState extends State<CreateTopic> {
                     } else {
                       _showErrorDialog('Lỗi', result);
                     }
-
                   }
                 },
                 style: ElevatedButton.styleFrom(
@@ -170,6 +169,7 @@ class _CreateTopicState extends State<CreateTopic> {
   void _showErrorDialog(String title, String message) {
     showDialog(
       context: context,
+      barrierDismissible: false,
       builder: (context) => Dialog(
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(10),
@@ -218,6 +218,7 @@ class _CreateTopicState extends State<CreateTopic> {
   void _showSuccessDialog(String message) {
     showDialog(
       context: context,
+      barrierDismissible: false,
       builder: (context) => AlertDialog(
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(10),

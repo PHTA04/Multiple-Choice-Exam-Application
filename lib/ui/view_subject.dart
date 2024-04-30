@@ -117,7 +117,7 @@ class _ViewSubjectState extends State<ViewSubject> {
       barrierDismissible: false, // Nhấn bên ngoài Dialog sẽ không bị tắt
       builder: (_) => AlertDialog(
         title: const Text(
-          'Chỉnh sửa môn học',
+          'Chỉnh Sửa Môn Học',
           textAlign: TextAlign.center,
           style: TextStyle(
             fontSize: 18,
@@ -160,8 +160,12 @@ class _ViewSubjectState extends State<ViewSubject> {
           TextButton(
             child: const Text('Update'),
             onPressed: () {
-              updateMonHoc();
-              Navigator.of(context).pop();
+              if (selectedTenMonHoc.isEmpty) {
+                showMessage('Lỗi: Vui lòng nhập Tên môn học.');
+              } else{
+                updateMonHoc();
+                Navigator.of(context).pop();
+              }
             },
           ),
           TextButton(

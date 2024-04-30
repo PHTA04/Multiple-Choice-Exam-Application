@@ -93,7 +93,6 @@ class _CreateSubjectState extends State<CreateSubject> {
                     _showErrorDialog('Lỗi', result);
                   }
                 }
-
               },
               style: ElevatedButton.styleFrom(
                 shape: RoundedRectangleBorder(
@@ -129,6 +128,7 @@ class _CreateSubjectState extends State<CreateSubject> {
   void _showErrorDialog(String title, String message) {
     showDialog(
       context: context,
+      barrierDismissible: false,
       builder: (context) => Dialog(
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(10),
@@ -177,6 +177,7 @@ class _CreateSubjectState extends State<CreateSubject> {
   void _showSuccessDialog(String message) {
     showDialog(
       context: context,
+      barrierDismissible: false,
       builder: (context) => AlertDialog(
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(10),

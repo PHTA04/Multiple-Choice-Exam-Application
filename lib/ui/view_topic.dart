@@ -141,41 +141,66 @@ class _ViewTopicState extends State<ViewTopic> {
               initialValue: selectMaChuDe,
               enabled: false,
             ),
+
             Expanded(
               flex: 0,
-              child: DropdownButton2<String>(
-                isExpanded: true,
-                hint: Text(
-                  selectedTenMonHoc,
-                  style: TextStyle(
-                    color: Theme.of(context).hintColor,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const SizedBox(height: 10),
+                  Text(
+                    "Tên môn học",
+                    style: TextStyle(
+                      fontSize: 12,
+                      color: Theme.of(context).hintColor,
+                    ),
                   ),
-                ),
-                value: selectedTenMonHoc,
-                onChanged: (String? selected) {
-                  setState(() {
-                    selectedTenMonHoc = selected!;
-                  });
-                  closeEditDialog();
-                  showEditDialog();
-                },
-                items: tenMonHocList.isNotEmpty
-                    ? tenMonHocList.map((String monHoc) {
-                  return DropdownMenuItem<String>(
-                    value: monHoc,
-                    child: Text(monHoc),
-                  );
-                }).toList()
-                    : null,
-                buttonStyleData: const ButtonStyleData(
-                  padding: EdgeInsets.symmetric(horizontal: 5),
-                  height: 58,
-                ),
-                menuItemStyleData: const MenuItemStyleData(
-                  height: 50,
-                ),
+                  DropdownButton2<String>(
+                    isDense: false,
+                    underline: Container(
+                      height: 0.2,
+                      color: Colors.black,
+                    ),
+                    isExpanded: true,
+                    hint: Text(
+                      selectedTenMonHoc,
+                      style: TextStyle(
+                        color: Theme.of(context).hintColor,
+                      ),
+                    ),
+                    value: selectedTenMonHoc,
+                    onChanged: (String? selected) {
+                      setState(() {
+                        selectedTenMonHoc = selected!;
+                      });
+                      closeEditDialog();
+                      showEditDialog();
+                    },
+                    items: tenMonHocList.isNotEmpty
+                        ? tenMonHocList.map((String monHoc) {
+                      return DropdownMenuItem<String>(
+                        value: monHoc,
+                        child: Text(
+                          monHoc,
+                          style: const TextStyle(
+                            fontSize: 14.2,
+                          ),
+                        ),
+                      );
+                    }).toList()
+                        : null,
+                    buttonStyleData: const ButtonStyleData(
+                      // padding: EdgeInsets.symmetric(horizontal: 5),
+                      height: 50,
+                    ),
+                    menuItemStyleData: const MenuItemStyleData(
+                      height: 60,
+                    ),
+                  ),
+                ],
               ),
             ),
+
             TextField(
               decoration: const InputDecoration(
                 labelText: 'Tên chủ đề',
@@ -202,9 +227,13 @@ class _ViewTopicState extends State<ViewTopic> {
           TextButton(
             child: const Text('Update'),
             onPressed: () {
-              updateChuDe();
-              Navigator.of(context).pop();
-              isOpenDialog = false;
+              if(selectedTenChuDe.isEmpty){
+                showMessage('Lỗi: Vui lòng nhập Tên chủ đề.');
+              } else {
+                updateChuDe();
+                Navigator.of(context).pop();
+                isOpenDialog = false;
+              }
             },
           ),
           TextButton(
