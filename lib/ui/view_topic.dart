@@ -1,8 +1,7 @@
 import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:multiple_choice_exam/database/databaseProvider.dart';
-import 'package:provider/provider.dart';
+import 'package:multiple_choice_exam/database/databaseService.dart';
 
 class ViewTopic extends StatefulWidget {
   const ViewTopic({super.key});
@@ -19,32 +18,15 @@ class _ViewTopicState extends State<ViewTopic> {
   List<String> tenMonHocList = [];
   bool updateData = false;
   bool isOpenDialog = false;
-  bool _isDatabaseConnected = false;
 
-  @override
-  void initState() {
-    super.initState();
-    final databaseProvider = Provider.of<DatabaseProvider>(context, listen: false);
-    databaseProvider.connectToDatabase().then((_) {
-      setState(() {
-        _isDatabaseConnected = true;
-      });
-    });
-  }
 
   @override
   Widget build(BuildContext context) {
-    if (!_isDatabaseConnected) {
-      return const CircularProgressIndicator();
-    }
-
-    final databaseProvider = Provider.of<DatabaseProvider>(context);
-    var myDatabase = databaseProvider.database;
 
     return FutureBuilder(
         future: Future.wait([
-          myDatabase.getChuDe(),
-          myDatabase.getTenMonHocList(),
+          DatabaseService.getTopic(),
+          DatabaseService.getTenMonHocList(),
         ]),
         builder: (context, AsyncSnapshot<List<dynamic>> snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
@@ -225,7 +207,7 @@ class _ViewTopicState extends State<ViewTopic> {
         ),
         actions: [
           TextButton(
-            child: const Text('Delete'),
+            child: const Text('Xóa'),
             onPressed: () {
               deleteChuDe();
               Navigator.of(context).pop();
@@ -233,7 +215,7 @@ class _ViewTopicState extends State<ViewTopic> {
             },
           ),
           TextButton(
-            child: const Text('Update'),
+            child: const Text('Cập Nhật'),
             onPressed: () {
               if(selectedTenChuDe.isEmpty){
                 showMessage('Lỗi: Vui lòng nhập Tên chủ đề.');
@@ -245,7 +227,7 @@ class _ViewTopicState extends State<ViewTopic> {
             },
           ),
           TextButton(
-            child: const Text('Cancel'),
+            child: const Text('Hủy'),
             onPressed: () {
               Navigator.of(context).pop();
               isOpenDialog = false;
@@ -278,9 +260,7 @@ class _ViewTopicState extends State<ViewTopic> {
   }
 
   void updateChuDe() {
-    final databaseProvider = Provider.of<DatabaseProvider>(context, listen: false);
-    final myDatabase = databaseProvider.database;
-    myDatabase.updateTopic(selectMaChuDe, selectedTenChuDe, selectedTenMonHoc).then((message) {
+    DatabaseService.updateTopic(selectMaChuDe, selectedTenChuDe, selectedTenMonHoc).then((message) {
       showMessage(message);
       setState(() {
         updateData = true;
@@ -289,9 +269,7 @@ class _ViewTopicState extends State<ViewTopic> {
   }
 
   void deleteChuDe() {
-    final databaseProvider = Provider.of<DatabaseProvider>(context, listen: false);
-    final myDatabase = databaseProvider.database;
-    myDatabase.deleteTopic(selectMaChuDe).then((message) {
+    DatabaseService.deleteTopic(selectMaChuDe).then((message) {
       showMessage(message);
       setState(() {
         updateData = true;

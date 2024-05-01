@@ -5,16 +5,8 @@ import 'package:provider/provider.dart';
 import 'package:multiple_choice_exam/database/databaseProvider.dart';
 
 void main() {
-  runApp(
-    MultiProvider(
-      providers: [
-        ChangeNotifierProvider<DatabaseProvider>(
-          create: (_) => DatabaseProvider(),
-        ),
-      ],
-      child: const MyApp(),
-    ),
-  );
+  WidgetsFlutterBinding.ensureInitialized();
+  runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {

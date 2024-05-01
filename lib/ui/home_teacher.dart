@@ -18,53 +18,50 @@ class HomeTeacher extends StatefulWidget {
 class _HomeTeacherState extends State<HomeTeacher> {
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider(
-        create: (context) => DatabaseProvider(),
-      child: Scaffold(
-        appBar: _appBar(),
-        body: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 20),
-          child: GridView.count(
-            crossAxisCount: 2,
-            children: [
-              _questionBankItem("Tạo Môn Học", Icons.book, () {
-                Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => const CreateSubject())
-                );
-              }),
-              _questionBankItem("Xem Môn Học", Icons.view_list, () {
-                Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => const ViewSubject())
-                );
-              }),
-              _questionBankItem("Tạo Chủ Đề", Icons.category, () {
-                Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => const CreateTopic())
-                );
-              }),
-              _questionBankItem("Xem Chủ Đề", Icons.article, () {
-                Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => const ViewTopic())
-                );
-              }),
-              _questionBankItem("Tạo Câu Hỏi", Icons.question_answer, () {
-                Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => const CreateQuestion())
-                );
-              }),
-              _questionBankItem("Xem Câu Hỏi", Icons.view_quilt, () {
-                Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => const ViewQuestion())
-                );
-              }),
-            ],
-          ),
+    return Scaffold(
+      appBar: _appBar(),
+      body: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 20),
+        child: GridView.count(
+          crossAxisCount: 2,
+          children: [
+            _questionBankItem("Tạo Môn Học", Icons.book, () {
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const CreateSubject())
+              );
+            }),
+            _questionBankItem("Xem Môn Học", Icons.view_list, () {
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const ViewSubject())
+              );
+            }),
+            _questionBankItem("Tạo Chủ Đề", Icons.category, () {
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const CreateTopic())
+              );
+            }),
+            _questionBankItem("Xem Chủ Đề", Icons.article, () {
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const ViewTopic())
+              );
+            }),
+            _questionBankItem("Tạo Câu Hỏi", Icons.question_answer, () {
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const CreateQuestion())
+              );
+            }),
+            _questionBankItem("Xem Câu Hỏi", Icons.view_quilt, () {
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const ViewQuestion())
+              );
+            }),
+          ],
         ),
       ),
     );

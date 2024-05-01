@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:multiple_choice_exam/database/databaseProvider.dart';
-import 'package:provider/provider.dart';
+import 'package:multiple_choice_exam/database/databaseService.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 
 class ViewSubject extends StatefulWidget {
@@ -15,30 +14,12 @@ class _ViewSubjectState extends State<ViewSubject> {
   String selectedMaMonHoc = '';
   String selectedTenMonHoc = '';
   bool updateData = false;
-  bool _isDatabaseConnected = false;
-
-  @override
-  void initState() {
-    super.initState();
-    final databaseProvider = Provider.of<DatabaseProvider>(context, listen: false);
-    databaseProvider.connectToDatabase().then((_) {
-      setState(() {
-        _isDatabaseConnected = true;
-      });
-    });
-  }
 
   @override
   Widget build(BuildContext context) {
-    if (!_isDatabaseConnected) {
-      return const CircularProgressIndicator();
-    }
-
-    final databaseProvider = Provider.of<DatabaseProvider>(context);
-    var myDatabase = databaseProvider.database;
 
     return FutureBuilder<List<Map<String, dynamic>>>(
-      future: myDatabase.getMonHoc(),
+      future: DatabaseService.getSubject(),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const CircularProgressIndicator(); // Hiển thị tiến trình tải
@@ -47,7 +28,7 @@ class _ViewSubjectState extends State<ViewSubject> {
         } else {
           if (updateData) {
             updateData = false; // Nếu dữ liệu đã được cập nhật, reset biến updated và tải lại dữ liệu
-            myDatabase.getMonHoc().then((data) {
+            DatabaseService.getSubject().then((data) {
               setState(() {
                 monHocList = data ?? [];
               });
@@ -160,14 +141,14 @@ class _ViewSubjectState extends State<ViewSubject> {
         ),
         actions: [
           TextButton(
-            child: const Text('Delete'),
+            child: const Text('Xóa'),
             onPressed: () {
               deleteMonHoc();
               Navigator.of(context).pop();
             },
           ),
           TextButton(
-            child: const Text('Update'),
+            child: const Text('Cập Nhật'),
             onPressed: () {
               if (selectedTenMonHoc.isEmpty) {
                 showMessage('Lỗi: Vui lòng nhập Tên môn học.');
@@ -178,7 +159,7 @@ class _ViewSubjectState extends State<ViewSubject> {
             },
           ),
           TextButton(
-            child: const Text('Cancel'),
+            child: const Text('Hủy'),
             onPressed: () {
               Navigator.of(context).pop();
             },
@@ -201,9 +182,7 @@ class _ViewSubjectState extends State<ViewSubject> {
   }
 
   void deleteMonHoc() {
-    final databaseProvider = Provider.of<DatabaseProvider>(context, listen: false);
-    final myDatabase = databaseProvider.database;
-    myDatabase.deleteSubject(selectedMaMonHoc).then((message) {
+    DatabaseService.deleteSubject(selectedMaMonHoc).then((message) {
       showMessage(message);
       setState(() {
         updateData = true;
@@ -212,9 +191,7 @@ class _ViewSubjectState extends State<ViewSubject> {
   }
 
   void updateMonHoc() {
-    final databaseProvider = Provider.of<DatabaseProvider>(context, listen: false);
-    final myDatabase = databaseProvider.database;
-    myDatabase.updateSubject(selectedMaMonHoc, selectedTenMonHoc).then((message) {
+    DatabaseService.updateSubject(selectedMaMonHoc, selectedTenMonHoc).then((message) {
       showMessage(message);
       setState(() {
         updateData = true;

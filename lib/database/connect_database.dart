@@ -4,8 +4,10 @@ class MySqlDatabase {
   late MySqlConnection _connection;
 
   Future<void> connect() async {
+
     final settings = ConnectionSettings(
       host: '10.0.2.2',
+      // host: '192.168.1.7',
       port: 3306,
       user: 'root',
       password: '123456',

@@ -1,6 +1,7 @@
 import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:flutter/material.dart';
 import 'package:multiple_choice_exam/database/databaseProvider.dart';
+import 'package:multiple_choice_exam/database/databaseService.dart';
 import 'package:multiple_choice_exam/ui/home_teacher.dart';
 import 'package:provider/provider.dart';
 
@@ -16,27 +17,9 @@ class _CreateTopicState extends State<CreateTopic> {
   TextEditingController tenChuDeController = TextEditingController();
   List<String> tenMonHocList = []; // Danh sách tên môn học
   String selectedMonHoc = ''; // Môn học được chọn
-  bool _isDatabaseConnected = false;
-
-  @override
-  void initState() {
-    super.initState();
-    final databaseProvider = Provider.of<DatabaseProvider>(context, listen: false);
-    databaseProvider.connectToDatabase().then((_) {
-      setState(() {
-        _isDatabaseConnected = true;
-      });
-    });
-  }
 
   @override
   Widget build(BuildContext context) {
-    if (!_isDatabaseConnected) {
-      return const CircularProgressIndicator();
-    }
-
-    final databaseProvider = Provider.of<DatabaseProvider>(context);
-    var myDatabase = databaseProvider.database;
 
     return Scaffold(
       appBar: _appBar(),
@@ -46,7 +29,7 @@ class _CreateTopicState extends State<CreateTopic> {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             FutureBuilder<List<String>>(
-              future: myDatabase.getTenMonHocList(),
+              future: DatabaseService.getTenMonHocList(),
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {
                   return const CircularProgressIndicator();
@@ -135,7 +118,7 @@ class _CreateTopicState extends State<CreateTopic> {
                   } else if (tenChuDe.isEmpty) {
                     _showErrorDialog("Lỗi", "Vui lòng nhập Tên chủ đề.");
                   } else {
-                    final result = await myDatabase.insertTopic(tenChuDe, tenMonHoc);
+                    final result = await DatabaseService.insertTopic(tenChuDe, tenMonHoc);
                     if (result == 'Chủ đề đã được thêm thành công.') {
                       _showSuccessDialog('Chủ đề đã được thêm thành công, bạn có muốn thêm chủ đề khác không?');
                       selectedMonHoc.isEmpty;

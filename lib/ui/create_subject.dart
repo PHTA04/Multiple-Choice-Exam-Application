@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:multiple_choice_exam/database/databaseProvider.dart';
+import 'package:multiple_choice_exam/database/databaseService.dart';
 import 'package:multiple_choice_exam/ui/home_teacher.dart';
-import 'package:provider/provider.dart';
+
 
 class CreateSubject extends StatefulWidget {
   const CreateSubject({super.key});
@@ -15,16 +15,8 @@ class _CreateSubjectState extends State<CreateSubject> {
   TextEditingController tenMonHocController = TextEditingController();
 
   @override
-  void initState() {
-    super.initState();
-    final databaseProvider = Provider.of<DatabaseProvider>(context, listen: false);
-    databaseProvider.connectToDatabase();
-  }
-
-  @override
   Widget build(BuildContext context) {
-    final databaseProvider = Provider.of<DatabaseProvider>(context);
-    var myDatabase = databaseProvider.database;
+
     return Scaffold(
       appBar: _appBar(),
       body: Padding(
@@ -82,7 +74,7 @@ class _CreateSubjectState extends State<CreateSubject> {
                 } else if (tenMonHoc.isEmpty) {
                   _showErrorDialog("Lỗi", "Vui lòng nhập Tên môn học.");
                 } else {
-                  final result = await myDatabase.insertSubject(maMonHoc, tenMonHoc);
+                  final result = await DatabaseService.insertSubject(maMonHoc, tenMonHoc);
                   if (result == 'Mã môn học đã tồn tại.') {
                     _showErrorDialog('Lỗi', result);
                   } else if (result == 'Môn học đã được thêm thành công.') {
