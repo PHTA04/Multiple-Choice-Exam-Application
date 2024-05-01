@@ -22,7 +22,8 @@ class _ViewSubjectState extends State<ViewSubject> {
       future: DatabaseService.getSubject(),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
-          return const CircularProgressIndicator(); // Hiển thị tiến trình tải
+          monHocList = snapshot.data ?? [];
+          // return const CircularProgressIndicator(); // Hiển thị tiến trình tải
         } else if (snapshot.hasError) {
           return Text('Đã xảy ra lỗi: ${snapshot.error}');
         } else {

@@ -30,7 +30,9 @@ class _ViewTopicState extends State<ViewTopic> {
         ]),
         builder: (context, AsyncSnapshot<List<dynamic>> snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return const CircularProgressIndicator();
+            chuDeList = snapshot.data?[0] ?? [];
+            tenMonHocList = snapshot.data?[1] ?? [];
+            // return const CircularProgressIndicator();
           } else if (snapshot.hasError) {
             return Text('Đã xảy ra lỗi: ${snapshot.error}');
           } else {
@@ -185,6 +187,9 @@ class _ViewTopicState extends State<ViewTopic> {
                     ),
                     menuItemStyleData: const MenuItemStyleData(
                       height: 60,
+                    ),
+                    dropdownStyleData: const DropdownStyleData(
+                      maxHeight: 300,
                     ),
                   ),
                 ],
