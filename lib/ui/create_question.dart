@@ -1,5 +1,8 @@
+import 'dart:io';
+import 'package:image_picker/image_picker.dart';
 import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:multiple_choice_exam/database/databaseService.dart';
 import 'package:multiple_choice_exam/ui/create_topic.dart';
 
@@ -11,6 +14,13 @@ class CreateQuestion extends StatefulWidget {
 }
 
 class _CreateQuestionState extends State<CreateQuestion> {
+  List<String> loaiCauHoiList = [
+    'Câu Hỏi 1 Đáp Án Đúng',
+    'Câu Hỏi Nhiều Đáp Án Đúng',
+    'Câu Hỏi Đúng Sai'
+  ];
+  String selectedLoaiCauHoi = '';
+
   List<String> tenMonHocList = []; // Danh sách tên môn học
   String selectedMonHoc = ''; // Môn học được chọn
 
@@ -34,12 +44,8 @@ class _CreateQuestionState extends State<CreateQuestion> {
   List<TextEditingController> danhSachControllers = []; // Danh sách các controller
   int soLuongDapAnDaThem = 2;
 
-  List<String> loaiCauHoiList = [
-    'Câu Hỏi 1 Đáp Án Đúng',
-    'Câu Hỏi Nhiều Đáp Án Đúng',
-    'Câu Hỏi Đúng Sai'
-  ];
-  String selectedLoaiCauHoi = '';
+  final ImagePicker _picker = ImagePicker();
+  File? selectedImage;
 
   @override
   Widget build(BuildContext context) {
@@ -54,7 +60,7 @@ class _CreateQuestionState extends State<CreateQuestion> {
                 FutureBuilder<List<String>>(
                   future: DatabaseService.getTenMonHocList(),
                   builder: (context, snapshot) {
-                     if (snapshot.hasData) {
+                    if (snapshot.hasData) {
                       tenMonHocList = snapshot.data!;
                       return Container(
                         decoration: BoxDecoration(
@@ -82,8 +88,8 @@ class _CreateQuestionState extends State<CreateQuestion> {
                               });
 
                               List<String> topicList =
-                                  await DatabaseService.getTenChuDeList(
-                                      selected!);
+                              await DatabaseService.getTenChuDeList(
+                                  selected!);
 
                               if (topicList.isEmpty) {
                                 _showTopicNullDialog(
@@ -92,11 +98,11 @@ class _CreateQuestionState extends State<CreateQuestion> {
                             },
                             items: tenMonHocList.isNotEmpty
                                 ? tenMonHocList.map((String monHoc) {
-                                    return DropdownMenuItem<String>(
-                                      value: monHoc,
-                                      child: Text(monHoc),
-                                    );
-                                  }).toList()
+                              return DropdownMenuItem<String>(
+                                value: monHoc,
+                                child: Text(monHoc),
+                              );
+                            }).toList()
                                 : null,
                             buttonStyleData: const ButtonStyleData(
                               padding: EdgeInsets.symmetric(horizontal: 5),
@@ -141,7 +147,7 @@ class _CreateQuestionState extends State<CreateQuestion> {
                               ),
                             ),
                             value:
-                                selectedChuDe.isNotEmpty ? selectedChuDe : null,
+                            selectedChuDe.isNotEmpty ? selectedChuDe : null,
                             onChanged: (String? selected) {
                               setState(() {
                                 selectedChuDe = selected!;
@@ -149,11 +155,11 @@ class _CreateQuestionState extends State<CreateQuestion> {
                             },
                             items: tenMonHocList.isNotEmpty
                                 ? tenMonHocList.map((String monHoc) {
-                                    return DropdownMenuItem<String>(
-                                      value: monHoc,
-                                      child: Text(monHoc),
-                                    );
-                                  }).toList()
+                              return DropdownMenuItem<String>(
+                                value: monHoc,
+                                child: Text(monHoc),
+                              );
+                            }).toList()
                                 : null,
                             buttonStyleData: const ButtonStyleData(
                               padding: EdgeInsets.symmetric(horizontal: 5),
@@ -242,6 +248,71 @@ class _CreateQuestionState extends State<CreateQuestion> {
                 const SizedBox(height: 20),
 
                 if (selectedLoaiCauHoi == 'Câu Hỏi 1 Đáp Án Đúng') ...[
+                  Container(
+                    margin: const EdgeInsets.only(left: 20.0, right: 20.0),
+                    child: Column(
+                      children: [
+                        selectedImage == null
+                            ? GestureDetector(
+                                onTap: () {
+                                  getImage();
+                                },
+                                child: Center(
+                                  child: Material(
+                                    elevation: 4.0,
+                                    borderRadius: BorderRadius.circular(20),
+                                    child: Container(
+                                      width: 150,
+                                      height: 150,
+                                      decoration: BoxDecoration(
+                                        border: Border.all(
+                                            color: Colors.black, width: 1.5),
+                                        borderRadius: BorderRadius.circular(20),
+                                      ),
+                                      child: const Icon(
+                                        Icons.camera_alt_outlined,
+                                        color: Colors.black,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              )
+                            : Center(
+                                child: Material(
+                                  elevation: 4.0,
+                                  borderRadius: BorderRadius.circular(20),
+                                  child: Container(
+                                    width: 150,
+                                    height: 150,
+                                    decoration: BoxDecoration(
+                                      border: Border.all(
+                                          color: Colors.black, width: 1.5),
+                                      borderRadius: BorderRadius.circular(20),
+                                    ),
+                                    child: ClipRRect(
+                                      borderRadius: BorderRadius.circular(20),
+                                      child: Image.file(
+                                        selectedImage!,
+                                        fit: BoxFit.cover,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                        const SizedBox(height: 10),
+                        const Text(
+                          "Tải lên hình ảnh câu hỏi",
+                          style: TextStyle(
+                            color: Colors.black,
+                            fontSize: 14,
+                            // fontWeight: FontWeight.w700,
+                          ),
+                        ),
+                        const SizedBox(height: 20),
+                      ],
+                    ),
+                  ),
+
                   _buildAnswerOption('A', dapAnAController),
                   const SizedBox(height: 20),
                   _buildAnswerOption('B', dapAnBController),
@@ -282,8 +353,8 @@ class _CreateQuestionState extends State<CreateQuestion> {
                           onPressed: () {
                             setState(() {
                               // Xóa controller của đáp án cuối cùng
-                              TextEditingController removedController =
-                              danhSachControllers.removeLast();
+                              TextEditingController removedController = danhSachControllers.removeLast();
+                              danhSachControllers.remove(removedController);
                               soLuongDapAnDaThem--;
                             });
                           },
@@ -337,8 +408,8 @@ class _CreateQuestionState extends State<CreateQuestion> {
                           onPressed: () {
                             setState(() {
                               // Xóa controller của đáp án cuối cùng
-                              TextEditingController removedController =
-                              danhSachControllers.removeLast();
+                              TextEditingController removedController = danhSachControllers.removeLast();
+                              danhSachControllers.remove(removedController);
                               soLuongDapAnDaThem--;
                             });
                           },
@@ -346,6 +417,8 @@ class _CreateQuestionState extends State<CreateQuestion> {
                       ],
                     ],
                   ),
+
+                  const SizedBox(height: 20),
                 ],
                 if (selectedLoaiCauHoi == 'Câu Hỏi Đúng Sai') ...[
                   _buildAnswerOption('A', dapAnAController),
@@ -385,6 +458,15 @@ class _CreateQuestionState extends State<CreateQuestion> {
         overflow: TextOverflow.ellipsis, // Xử lý văn bản dài
       ),
     );
+  }
+
+  Future getImage() async {
+    var image = await _picker.pickImage(source: ImageSource.gallery);
+
+    selectedImage = File(image!.path);
+    setState(() {
+
+    });
   }
 
   void _showTopicNullDialog(String message) {
@@ -468,7 +550,7 @@ class _CreateQuestionState extends State<CreateQuestion> {
               labelStyle: TextStyle(color: Theme.of(context).hintColor),
               hintStyle: const TextStyle(color: Colors.grey),
               contentPadding:
-                  const EdgeInsets.symmetric(vertical: 18, horizontal: 22),
+              const EdgeInsets.symmetric(vertical: 18, horizontal: 22),
               enabledBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(16),
                 borderSide: const BorderSide(color: Colors.blue),
