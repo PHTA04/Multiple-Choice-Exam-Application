@@ -31,6 +31,9 @@ class _CreateQuestionState extends State<CreateQuestion> {
   String? selectedDapAnDung;
   List<String> dapAnDungList = [];
 
+  List<TextEditingController> danhSachControllers = []; // Danh sách các controller
+  int soLuongDapAnDaThem = 2;
+
   List<String> loaiCauHoiList = [
     'Câu Hỏi 1 Đáp Án Đúng',
     'Câu Hỏi Nhiều Đáp Án Đúng',
@@ -243,7 +246,52 @@ class _CreateQuestionState extends State<CreateQuestion> {
                   const SizedBox(height: 20),
                   _buildAnswerOption('B', dapAnBController),
                   const SizedBox(height: 20),
-                  _buildAnswerOption('C', dapAnCController),
+
+                  Column(
+                    children: danhSachControllers.asMap().entries.map((entry) {
+                      int index = entry.key;
+                      TextEditingController controller = entry.value;
+                      return Column(
+                        children: [
+                          _buildAnswerOption(String.fromCharCode(65 + index + 2), controller), // Bắt đầu từ C
+                          const SizedBox(height: 20),
+                        ],
+                      );
+                    }).toList(),
+                  ),
+
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      if (soLuongDapAnDaThem < 8) ...[
+                        IconButton(
+                          icon: const Icon(Icons.add),
+                          onPressed: () {
+                            setState(() {
+                              // Tạo một controller mới cho đáp án mới và thêm vào danh sách
+                              TextEditingController newController = TextEditingController();
+                              danhSachControllers.add(newController);
+                              soLuongDapAnDaThem++;
+                            });
+                          },
+                        ),
+                      ],
+                      if (soLuongDapAnDaThem > 2) ...[
+                        IconButton(
+                          icon: const Icon(Icons.remove),
+                          onPressed: () {
+                            setState(() {
+                              // Xóa controller của đáp án cuối cùng
+                              TextEditingController removedController =
+                              danhSachControllers.removeLast();
+                              soLuongDapAnDaThem--;
+                            });
+                          },
+                        ),
+                      ],
+                    ],
+                  ),
+
                   const SizedBox(height: 20),
                 ],
                 if (selectedLoaiCauHoi == 'Câu Hỏi Nhiều Đáp Án Đúng') ...[
@@ -253,6 +301,51 @@ class _CreateQuestionState extends State<CreateQuestion> {
                   const SizedBox(height: 20),
                   _buildAnswerCheckBox('C', dapAnCController),
                   const SizedBox(height: 20),
+
+                  Column(
+                    children: danhSachControllers.asMap().entries.map((entry) {
+                      int index = entry.key;
+                      TextEditingController controller = entry.value;
+                      return Column(
+                        children: [
+                          _buildAnswerCheckBox(String.fromCharCode(65 + index + 3), controller), // Bắt đầu từ C
+                          const SizedBox(height: 20),
+                        ],
+                      );
+                    }).toList(),
+                  ),
+
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      if (soLuongDapAnDaThem < 7) ...[
+                        IconButton(
+                          icon: const Icon(Icons.add),
+                          onPressed: () {
+                            setState(() {
+                              // Tạo một controller mới cho đáp án mới và thêm vào danh sách
+                              TextEditingController newController = TextEditingController();
+                              danhSachControllers.add(newController);
+                              soLuongDapAnDaThem++;
+                            });
+                          },
+                        ),
+                      ],
+                      if (soLuongDapAnDaThem > 2) ...[
+                        IconButton(
+                          icon: const Icon(Icons.remove),
+                          onPressed: () {
+                            setState(() {
+                              // Xóa controller của đáp án cuối cùng
+                              TextEditingController removedController =
+                              danhSachControllers.removeLast();
+                              soLuongDapAnDaThem--;
+                            });
+                          },
+                        ),
+                      ],
+                    ],
+                  ),
                 ],
                 if (selectedLoaiCauHoi == 'Câu Hỏi Đúng Sai') ...[
                   _buildAnswerOption('A', dapAnAController),
