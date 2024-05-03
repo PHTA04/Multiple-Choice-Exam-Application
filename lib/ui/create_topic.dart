@@ -73,6 +73,9 @@ class _CreateTopicState extends State<CreateTopic> {
                         menuItemStyleData: const MenuItemStyleData(
                           height: 50,
                         ),
+                        dropdownStyleData: const DropdownStyleData(
+                          maxHeight: 350,
+                        ),
                       ),
                     ),
                   );

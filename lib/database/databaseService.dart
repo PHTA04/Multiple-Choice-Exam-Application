@@ -2,7 +2,7 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 
 class DatabaseService {
-  static const String ipName = '192.168.1.7';
+  static const String ipName = '192.168.1.10';
   static const String port = '2612';
   static const String baseUrl = 'http://$ipName:$port';
 
@@ -105,6 +105,47 @@ class DatabaseService {
       Iterable decodedBody = jsonDecode(response.body);
       List<Map<String, dynamic>> chuDeList = List<Map<String, dynamic>>.from(decodedBody);
       return chuDeList;
+    } else {
+      throw Exception('Failed to load list of topics');
+    }
+  }
+
+  static Future<List<String>> getTenChuDeList(String tenMonHoc) async {
+    // Kiểm tra nếu tenMonHoc là null hoặc chuỗi trống
+    if (tenMonHoc == null || tenMonHoc.isEmpty) {
+      // Trả về danh sách rỗng
+      return [];
+    }
+
+    final response = await http.post(
+      Uri.parse('$baseUrl/getTenChuDeList'),
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+      },
+      body: jsonEncode(<String, String>{
+        'tenMonHoc': tenMonHoc,
+      }),
+    );
+
+    if (response.statusCode == 200) {
+      // Chuyển đổi dữ liệu từ dạng JSON sang List<String>
+      var decodedBody = jsonDecode(response.body);
+      if (decodedBody is List) {
+        // Kiểm tra xem danh sách chủ đề có rỗng không
+        if (decodedBody.isEmpty) {
+          // Trả về danh sách rỗng
+          return [];
+        } else {
+          List<String> tenChuDeList = List<String>.from(decodedBody);
+          return tenChuDeList;
+        }
+      } else if (decodedBody == null) {
+        // Trường hợp nếu trả về thông báo không tìm thấy chủ đề
+        return [];
+      } else {
+        // Nếu không phải List, có thể xảy ra lỗi hoặc dữ liệu không hợp lệ
+        throw Exception('Invalid response format');
+      }
     } else {
       throw Exception('Failed to load list of topics');
     }

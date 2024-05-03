@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:multiple_choice_exam/ui/home_teacher.dart';
 import 'package:multiple_choice_exam/ui/theme.dart';
-import 'package:provider/provider.dart';
-import 'package:multiple_choice_exam/database/databaseProvider.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
