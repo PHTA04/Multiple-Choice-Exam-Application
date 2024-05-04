@@ -2,9 +2,9 @@ import 'dart:io';
 import 'package:image_picker/image_picker.dart';
 import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:flutter/material.dart';
-import 'package:image_picker/image_picker.dart';
 import 'package:multiple_choice_exam/database/databaseService.dart';
 import 'package:multiple_choice_exam/ui/create_topic.dart';
+import 'package:multiple_choice_exam/ui/home_teacher.dart';
 
 class CreateQuestion extends StatefulWidget {
   const CreateQuestion({super.key});
@@ -204,6 +204,8 @@ class _CreateQuestionState extends State<CreateQuestion> {
                       onChanged: (String? selected) {
                         setState(() {
                           selectedLoaiCauHoi = selected!;
+                          soLuongDapAnDaThem = 2;
+                          danhSachControllers.clear();
                         });
                       },
                       items: loaiCauHoiList.map((String loaiCauHoi) {
@@ -247,71 +249,72 @@ class _CreateQuestionState extends State<CreateQuestion> {
                 ),
                 const SizedBox(height: 20),
 
-                if (selectedLoaiCauHoi == 'Câu Hỏi 1 Đáp Án Đúng') ...[
-                  Container(
-                    margin: const EdgeInsets.only(left: 20.0, right: 20.0),
-                    child: Column(
-                      children: [
-                        selectedImage == null
-                            ? GestureDetector(
-                                onTap: () {
-                                  getImage();
-                                },
-                                child: Center(
-                                  child: Material(
-                                    elevation: 4.0,
-                                    borderRadius: BorderRadius.circular(20),
-                                    child: Container(
-                                      width: 150,
-                                      height: 150,
-                                      decoration: BoxDecoration(
-                                        border: Border.all(
-                                            color: Colors.black, width: 1.5),
-                                        borderRadius: BorderRadius.circular(20),
-                                      ),
-                                      child: const Icon(
-                                        Icons.camera_alt_outlined,
-                                        color: Colors.black,
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              )
-                            : Center(
-                                child: Material(
-                                  elevation: 4.0,
-                                  borderRadius: BorderRadius.circular(20),
-                                  child: Container(
-                                    width: 150,
-                                    height: 150,
-                                    decoration: BoxDecoration(
-                                      border: Border.all(
-                                          color: Colors.black, width: 1.5),
-                                      borderRadius: BorderRadius.circular(20),
-                                    ),
-                                    child: ClipRRect(
-                                      borderRadius: BorderRadius.circular(20),
-                                      child: Image.file(
-                                        selectedImage!,
-                                        fit: BoxFit.cover,
-                                      ),
-                                    ),
-                                  ),
-                                ),
+                Container(
+                  margin: const EdgeInsets.only(left: 20.0, right: 20.0),
+                  child: Column(
+                    children: [
+                      selectedImage == null
+                          ? GestureDetector(
+                        onTap: () {
+                          getImage();
+                        },
+                        child: Center(
+                          child: Material(
+                            elevation: 4.0,
+                            borderRadius: BorderRadius.circular(20),
+                            child: Container(
+                              width: 150,
+                              height: 150,
+                              decoration: BoxDecoration(
+                                border: Border.all(
+                                    color: Colors.black, width: 1.5),
+                                borderRadius: BorderRadius.circular(20),
                               ),
-                        const SizedBox(height: 10),
-                        const Text(
-                          "Tải lên hình ảnh câu hỏi",
-                          style: TextStyle(
-                            color: Colors.black,
-                            fontSize: 14,
-                            // fontWeight: FontWeight.w700,
+                              child: const Icon(
+                                Icons.camera_alt_outlined,
+                                color: Colors.black,
+                              ),
+                            ),
                           ),
                         ),
-                        const SizedBox(height: 20),
-                      ],
-                    ),
+                      )
+                          : Center(
+                        child: Material(
+                          elevation: 4.0,
+                          borderRadius: BorderRadius.circular(20),
+                          child: Container(
+                            width: 150,
+                            height: 150,
+                            decoration: BoxDecoration(
+                              border: Border.all(
+                                  color: Colors.black, width: 1.5),
+                              borderRadius: BorderRadius.circular(20),
+                            ),
+                            child: ClipRRect(
+                              borderRadius: BorderRadius.circular(20),
+                              child: Image.file(
+                                selectedImage!,
+                                fit: BoxFit.cover,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 10),
+                      const Text(
+                        "Tải lên hình ảnh câu hỏi",
+                        style: TextStyle(
+                          color: Colors.black,
+                          fontSize: 14,
+                          // fontWeight: FontWeight.w700,
+                        ),
+                      ),
+                      const SizedBox(height: 20),
+                    ],
                   ),
+                ),
+
+                if (selectedLoaiCauHoi == 'Câu Hỏi 1 Đáp Án Đúng') ...[
 
                   _buildAnswerOption('A', dapAnAController),
                   const SizedBox(height: 20),
@@ -339,9 +342,19 @@ class _CreateQuestionState extends State<CreateQuestion> {
                           icon: const Icon(Icons.add),
                           onPressed: () {
                             setState(() {
-                              // Tạo một controller mới cho đáp án mới và thêm vào danh sách
-                              TextEditingController newController = TextEditingController();
-                              danhSachControllers.add(newController);
+                              if (soLuongDapAnDaThem == 2) {
+                                danhSachControllers.add(dapAnCController);
+                              } else if (soLuongDapAnDaThem == 3) {
+                                danhSachControllers.add(dapAnDController);
+                              } else if (soLuongDapAnDaThem == 4) {
+                                danhSachControllers.add(dapAnEController);
+                              } else if (soLuongDapAnDaThem == 5) {
+                                danhSachControllers.add(dapAnFController);
+                              } else if (soLuongDapAnDaThem == 6) {
+                                danhSachControllers.add(dapAnGController);
+                              } else if (soLuongDapAnDaThem == 7) {
+                                danhSachControllers.add(dapAnHController);
+                              }
                               soLuongDapAnDaThem++;
                             });
                           },
@@ -352,9 +365,25 @@ class _CreateQuestionState extends State<CreateQuestion> {
                           icon: const Icon(Icons.remove),
                           onPressed: () {
                             setState(() {
-                              // Xóa controller của đáp án cuối cùng
-                              TextEditingController removedController = danhSachControllers.removeLast();
-                              danhSachControllers.remove(removedController);
+                              if (soLuongDapAnDaThem == 3) {
+                                danhSachControllers.remove(dapAnCController);
+                                dapAnCController.clear();
+                              } else if (soLuongDapAnDaThem == 4) {
+                                danhSachControllers.remove(dapAnDController);
+                                dapAnDController.clear();
+                              } else if (soLuongDapAnDaThem == 5) {
+                                danhSachControllers.remove(dapAnEController);
+                                dapAnEController.clear();
+                              } else if (soLuongDapAnDaThem == 6) {
+                                danhSachControllers.remove(dapAnFController);
+                                dapAnFController.clear();
+                              } else if (soLuongDapAnDaThem == 7) {
+                                danhSachControllers.remove(dapAnGController);
+                                dapAnGController.clear();
+                              } else if (soLuongDapAnDaThem == 8) {
+                                danhSachControllers.remove(dapAnHController);
+                                dapAnHController.clear();
+                              }
                               soLuongDapAnDaThem--;
                             });
                           },
@@ -364,8 +393,8 @@ class _CreateQuestionState extends State<CreateQuestion> {
                   ),
 
                   const SizedBox(height: 20),
-                ],
-                if (selectedLoaiCauHoi == 'Câu Hỏi Nhiều Đáp Án Đúng') ...[
+                ]
+                else if (selectedLoaiCauHoi == 'Câu Hỏi Nhiều Đáp Án Đúng') ...[
                   _buildAnswerCheckBox('A', dapAnAController),
                   const SizedBox(height: 20),
                   _buildAnswerCheckBox('B', dapAnBController),
@@ -394,9 +423,17 @@ class _CreateQuestionState extends State<CreateQuestion> {
                           icon: const Icon(Icons.add),
                           onPressed: () {
                             setState(() {
-                              // Tạo một controller mới cho đáp án mới và thêm vào danh sách
-                              TextEditingController newController = TextEditingController();
-                              danhSachControllers.add(newController);
+                              if (soLuongDapAnDaThem == 2) {
+                                danhSachControllers.add(dapAnDController);
+                              } else if (soLuongDapAnDaThem == 3) {
+                                danhSachControllers.add(dapAnEController);
+                              } else if (soLuongDapAnDaThem == 4) {
+                                danhSachControllers.add(dapAnFController);
+                              } else if (soLuongDapAnDaThem == 5) {
+                                danhSachControllers.add(dapAnGController);
+                              } else if (soLuongDapAnDaThem == 6) {
+                                danhSachControllers.add(dapAnHController);
+                              }
                               soLuongDapAnDaThem++;
                             });
                           },
@@ -407,9 +444,22 @@ class _CreateQuestionState extends State<CreateQuestion> {
                           icon: const Icon(Icons.remove),
                           onPressed: () {
                             setState(() {
-                              // Xóa controller của đáp án cuối cùng
-                              TextEditingController removedController = danhSachControllers.removeLast();
-                              danhSachControllers.remove(removedController);
+                              if (soLuongDapAnDaThem == 3) {
+                                danhSachControllers.remove(dapAnDController);
+                                dapAnDController.clear();
+                              } else if (soLuongDapAnDaThem == 4) {
+                                danhSachControllers.remove(dapAnEController);
+                                dapAnEController.clear();
+                              } else if (soLuongDapAnDaThem == 5) {
+                                danhSachControllers.remove(dapAnFController);
+                                dapAnFController.clear();
+                              } else if (soLuongDapAnDaThem == 6) {
+                                danhSachControllers.remove(dapAnGController);
+                                dapAnGController.clear();
+                              } else if (soLuongDapAnDaThem == 7) {
+                                danhSachControllers.remove(dapAnHController);
+                                dapAnHController.clear();
+                              }
                               soLuongDapAnDaThem--;
                             });
                           },
@@ -419,16 +469,64 @@ class _CreateQuestionState extends State<CreateQuestion> {
                   ),
 
                   const SizedBox(height: 20),
-                ],
-                if (selectedLoaiCauHoi == 'Câu Hỏi Đúng Sai') ...[
-                  _buildAnswerOption('A', dapAnAController),
-                  const SizedBox(height: 20),
-                  _buildAnswerOption('B', dapAnBController),
-                  const SizedBox(height: 20),
-                ],
+                ]
+                else if (selectedLoaiCauHoi == 'Câu Hỏi Đúng Sai') ...[
+                    _buildAnswerOption('A', dapAnAController),
+                    const SizedBox(height: 20),
+                    _buildAnswerOption('B', dapAnBController),
+                    const SizedBox(height: 20),
+                  ],
 
                 ElevatedButton(
-                    onPressed: () async {},
+                    onPressed: () async {
+                      if(selectedMonHoc.isEmpty && selectedChuDe.isEmpty && selectedLoaiCauHoi.isEmpty && ndCauHoiController.text.isEmpty){
+                        _showErrorDialog("Lỗi", "Vui lòng chon và nhập đầy đủ thông tin.");
+                      } else if(selectedMonHoc.isEmpty){
+                        _showErrorDialog("Lỗi", "Vui lòng chọn Tên môn học.");
+                      } else if(selectedChuDe.isEmpty){
+                        _showErrorDialog("Lỗi", "Vui lòng chọn Tên chủ đề.");
+                      } else if(selectedLoaiCauHoi.isEmpty){
+                        _showErrorDialog("Lỗi", "Vui lòng chọn loại câu hỏi.");
+                      } else if(ndCauHoiController.text.isEmpty){
+                        _showErrorDialog("Lỗi", "Vui lòng nhập nội dung câu hỏi.");
+                      } else {
+                        await DatabaseService.insertQuestion(
+                          ndCauHoiController.text,
+                          selectedImage != null ? selectedImage!.path : '',
+                          selectedLoaiCauHoi,
+                          dapAnAController.text,
+                          dapAnBController.text,
+                          dapAnCController.text,
+                          dapAnDController.text,
+                          dapAnEController.text,
+                          dapAnFController.text,
+                          dapAnGController.text,
+                          dapAnHController.text,
+                          selectedDapAnDung != null ? [selectedDapAnDung!] : [],
+                          selectedMonHoc,
+                          selectedChuDe,
+                        );
+                        _showSuccessDialog("Câu hỏi đã được thêm thành công, bạn có muốn thêm câu hỏi khác không ?");
+
+                        setState(() {
+                          ndCauHoiController.clear();
+                          dapAnAController.clear();
+                          dapAnBController.clear();
+                          dapAnCController.clear();
+                          dapAnDController.clear();
+                          dapAnEController.clear();
+                          dapAnFController.clear();
+                          dapAnGController.clear();
+                          dapAnHController.clear();
+                          selectedImage = null;
+                          selectedDapAnDung = null;
+                          dapAnDungList.clear();
+                          danhSachControllers.clear();
+                          soLuongDapAnDaThem = 2;
+                        });
+                      }
+                    },
+
                     style: ElevatedButton.styleFrom(
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(10),
@@ -462,10 +560,8 @@ class _CreateQuestionState extends State<CreateQuestion> {
 
   Future getImage() async {
     var image = await _picker.pickImage(source: ImageSource.gallery);
-
     selectedImage = File(image!.path);
     setState(() {
-
     });
   }
 
@@ -539,6 +635,7 @@ class _CreateQuestionState extends State<CreateQuestion> {
   }
 
   Widget _buildAnswerOption(String option, TextEditingController controller) {
+    print("Controller name: ${controller.runtimeType}");
     return Row(
       children: [
         Expanded(
@@ -626,6 +723,8 @@ class _CreateQuestionState extends State<CreateQuestion> {
                 // Nếu đáp án chưa được chọn, hãy thêm nó vào danh sách
                 dapAnDungList.add(option);
               }
+              // Cập nhật lại danh sách các đáp án đúng
+              selectedDapAnDung = dapAnDungList.isNotEmpty ? dapAnDungList.join(",") : null;
             });
           },
           child: Container(
@@ -633,6 +732,7 @@ class _CreateQuestionState extends State<CreateQuestion> {
             height: 40,
             decoration: BoxDecoration(
               shape: BoxShape.rectangle,
+              borderRadius: BorderRadius.circular(4),
               color: dapAnDungList.contains(option) // Kiểm tra xem đáp án có được chọn không
                   ? Colors.green // Nếu có, sử dụng màu xanh
                   : Colors.red.withOpacity(0.7), // Nếu không, sử dụng màu đỏ
@@ -648,6 +748,124 @@ class _CreateQuestionState extends State<CreateQuestion> {
           ),
         ),
       ],
+    );
+  }
+
+  void _showErrorDialog(String title, String message) {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) => Dialog(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(10),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.all(20.0),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Icon(
+                Icons.error_outline,
+                color: Colors.red,
+                size: 48,
+              ),
+              const SizedBox(height: 16),
+              Text(
+                title,
+                style: const TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              const SizedBox(height: 10),
+              Text(
+                message,
+                style: const TextStyle(fontSize: 14.5),
+              ),
+              const SizedBox(height: 20),
+              ElevatedButton(
+                onPressed: () => Navigator.pop(context),
+                style: ElevatedButton.styleFrom(
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  padding: const EdgeInsets.symmetric(vertical: 15),
+                ),
+                child: const Text("Đóng"),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  void _showSuccessDialog(String message) {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) => AlertDialog(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(10),
+        ),
+        title: Column(
+          children: [
+            const Icon(
+              Icons.check_circle,
+              color: Colors.green,
+              size: 48,
+            ),
+            const SizedBox(height: 16),
+            const Text(
+              'Thông Báo',
+              style: TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+                color: Colors.black,
+              ),
+            ),
+            const SizedBox(height: 8),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              child: Text(
+                message,
+                style: const TextStyle(
+                  fontSize: 16,
+                  color: Colors.black,
+                ),
+                textAlign: TextAlign.center,
+              ),
+            ),
+          ],
+        ),
+        actions: [
+          ElevatedButton(
+            onPressed: () {
+              Navigator.pop(context, true);
+            },
+            style: ElevatedButton.styleFrom(
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(10),
+              ),
+              padding: const EdgeInsets.symmetric(vertical: 15),
+            ),
+            child: const Text('Có'),
+          ),
+          ElevatedButton(
+            onPressed: () {
+              // Navigator.pop(context, false); // Trả về giá trị false khi chọn "Không"
+              Navigator.push(context, MaterialPageRoute(builder: (context) => const HomeTeacher()));
+            },
+            style: ElevatedButton.styleFrom(
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(10),
+              ),
+              padding: const EdgeInsets.symmetric(vertical: 15),
+            ),
+            child: const Text('Không'),
+          ),
+        ],
+      ),
     );
   }
 

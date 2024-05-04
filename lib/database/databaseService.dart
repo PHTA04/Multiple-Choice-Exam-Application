@@ -2,7 +2,7 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 
 class DatabaseService {
-  static const String ipName = '192.168.1.10';
+  static const String ipName = '192.168.1.2';
   static const String port = '2612';
   static const String baseUrl = 'http://$ipName:$port';
 
@@ -186,5 +186,59 @@ class DatabaseService {
       throw Exception('Failed to delete topic');
     }
   }
+
+  static Future<String> insertQuestion(
+      String ndCauHoi,
+      String imageCauHoi,
+      String loaiCauHoi,
+      String dapAnA,
+      String dapAnB,
+      String dapAnC,
+      String dapAnD,
+      String dapAnE,
+      String dapAnF,
+      String dapAnG,
+      String dapAnH,
+      List<String> dapAnDung,
+      String tenMonHoc,
+      String tenChuDe,
+      ) async {
+    // Lấy danh sách chủ đề từ tên môn học
+    List<String> tenChuDeList = await getTenChuDeList(tenMonHoc);
+
+    // Kiểm tra xem chủ đề có tồn tại không
+    if (!tenChuDeList.contains(tenChuDe)) {
+      throw Exception('Tên chủ đề không tồn tại trong môn học này');
+    }
+
+    final response = await http.post(
+      Uri.parse('$baseUrl/insertQuestion'),
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+      },
+      body: jsonEncode(<String, dynamic>{
+        'ndCauHoi': ndCauHoi,
+        'imageCauHoi': imageCauHoi,
+        'loaiCauHoi': loaiCauHoi,
+        'dapAnA': dapAnA,
+        'dapAnB': dapAnB,
+        'dapAnC': dapAnC,
+        'dapAnD': dapAnD,
+        'dapAnE': dapAnE,
+        'dapAnF': dapAnF,
+        'dapAnG': dapAnG,
+        'dapAnH': dapAnH,
+        'dapAnDung': dapAnDung,
+        'tenMonHoc': tenMonHoc,
+        'tenChuDe': tenChuDe,
+      }),
+    );
+    if (response.statusCode == 200) {
+      return response.body;
+    } else {
+      throw Exception('Failed to insert question');
+    }
+  }
+
 
 }
