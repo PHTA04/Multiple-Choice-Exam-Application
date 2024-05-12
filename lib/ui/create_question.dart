@@ -494,10 +494,12 @@ class _CreateQuestionState extends State<CreateQuestion> {
                         _showErrorDialog("Lỗi", "Vui lòng nhập nội dung câu hỏi.");
                       } else {
                         String? imageUrl;
+                        String? idImage;
                         if (selectedImage != null) {
-                          // Nếu có hình ảnh được chọn
                           imageUrl = await firebaseService.uploadImage(selectedImage!);
                           print("Ảnh test: $imageUrl");
+
+                          idImage = await firebaseService.insertImage(imageUrl);
                         }
 
                         await DatabaseService.insertQuestion(
@@ -515,6 +517,7 @@ class _CreateQuestionState extends State<CreateQuestion> {
                           selectedDapAnDung != null ? [selectedDapAnDung!] : [],
                           selectedMonHoc,
                           selectedChuDe,
+                          idImage ?? '',
                         );
                         _showSuccessDialog("Câu hỏi đã được thêm thành công, bạn có muốn thêm câu hỏi khác không ?");
 

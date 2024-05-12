@@ -202,6 +202,7 @@ class DatabaseService {
       List<String> dapAnDung,
       String tenMonHoc,
       String tenChuDe,
+      String idImage, // Thêm idImage vào đây
       ) async {
     // Lấy danh sách chủ đề từ tên môn học
     List<String> tenChuDeList = await getTenChuDeList(tenMonHoc);
@@ -231,6 +232,7 @@ class DatabaseService {
         'dapAnDung': dapAnDung,
         'tenMonHoc': tenMonHoc,
         'tenChuDe': tenChuDe,
+        'idImage': idImage, // Thêm idImage vào đây
       }),
     );
     if (response.statusCode == 200) {
@@ -239,6 +241,5 @@ class DatabaseService {
       throw Exception('Failed to insert question');
     }
   }
-
 
 }
