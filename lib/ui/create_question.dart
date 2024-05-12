@@ -3,6 +3,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:flutter/material.dart';
 import 'package:multiple_choice_exam/database/databaseService.dart';
+import 'package:multiple_choice_exam/database/firebaseService.dart';
 import 'package:multiple_choice_exam/ui/create_topic.dart';
 import 'package:multiple_choice_exam/ui/home_teacher.dart';
 
@@ -46,6 +47,8 @@ class _CreateQuestionState extends State<CreateQuestion> {
 
   final ImagePicker _picker = ImagePicker();
   File? selectedImage;
+
+  final FirebaseService firebaseService = FirebaseService();
 
   @override
   Widget build(BuildContext context) {
@@ -490,9 +493,16 @@ class _CreateQuestionState extends State<CreateQuestion> {
                       } else if(ndCauHoiController.text.isEmpty){
                         _showErrorDialog("Lỗi", "Vui lòng nhập nội dung câu hỏi.");
                       } else {
+                        String? imageUrl;
+                        if (selectedImage != null) {
+                          // Nếu có hình ảnh được chọn
+                          imageUrl = await firebaseService.uploadImage(selectedImage!);
+                          print("Ảnh test: $imageUrl");
+                        }
+
                         await DatabaseService.insertQuestion(
                           ndCauHoiController.text,
-                          selectedImage != null ? selectedImage!.path : '',
+                          selectedImage != null ? imageUrl! : '',
                           selectedLoaiCauHoi,
                           dapAnAController.text,
                           dapAnBController.text,
