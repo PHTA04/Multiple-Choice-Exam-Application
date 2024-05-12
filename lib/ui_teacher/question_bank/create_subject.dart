@@ -1,22 +1,17 @@
-import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:flutter/material.dart';
-import 'package:multiple_choice_exam/database/databaseProvider.dart';
 import 'package:multiple_choice_exam/database/databaseService.dart';
-import 'package:multiple_choice_exam/ui/home_teacher.dart';
-import 'package:provider/provider.dart';
+import 'package:multiple_choice_exam/ui_teacher/question_bank/question_bank.dart';
 
-
-class CreateTopic extends StatefulWidget {
-  const CreateTopic({super.key});
+class CreateSubject extends StatefulWidget {
+  const CreateSubject({super.key});
 
   @override
-  State<CreateTopic> createState() => _CreateTopicState();
+  State<CreateSubject> createState() => _CreateSubjectState();
 }
 
-class _CreateTopicState extends State<CreateTopic> {
-  TextEditingController tenChuDeController = TextEditingController();
-  List<String> tenMonHocList = []; // Danh sách tên môn học
-  String selectedMonHoc = ''; // Môn học được chọn
+class _CreateSubjectState extends State<CreateSubject> {
+  TextEditingController maMonHocController = TextEditingController();
+  TextEditingController tenMonHocController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -28,71 +23,11 @@ class _CreateTopicState extends State<CreateTopic> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            FutureBuilder<List<String>>(
-              future: DatabaseService.getTenMonHocList(),
-              builder: (context, snapshot) {
-                if (snapshot.connectionState == ConnectionState.waiting) {
-                  return const CircularProgressIndicator();
-                } else if (snapshot.hasData) {
-                  tenMonHocList = snapshot.data!;
-                  return Container(
-                    decoration: BoxDecoration(
-                      border: Border.all(
-                        color: Colors.blue,
-                        width: 1.0,
-                      ),
-                      borderRadius: BorderRadius.circular(16),
-                    ),
-                    child: DropdownButtonHideUnderline(
-                      child: DropdownButton2<String>(
-                        isExpanded: true,
-                        hint: Text(
-                          'Vui lòng chọn tên môn học',
-                          style: TextStyle(
-                            color: Theme.of(context).hintColor,
-                          ),
-                        ),
-                        value: selectedMonHoc.isNotEmpty ? selectedMonHoc : null,
-                        onChanged: (String? selected) {
-                          setState(() {
-                            selectedMonHoc = selected!;
-                          });
-                        },
-                        items: tenMonHocList.isNotEmpty
-                            ? tenMonHocList.map((String monHoc) {
-                          return DropdownMenuItem<String>(
-                            value: monHoc,
-                            child: Text(monHoc),
-                          );
-                        }).toList()
-                            : null,
-                        buttonStyleData: const ButtonStyleData(
-                          padding: EdgeInsets.symmetric(horizontal: 5),
-                          height: 58,
-                        ),
-                        menuItemStyleData: const MenuItemStyleData(
-                          height: 50,
-                        ),
-                        dropdownStyleData: const DropdownStyleData(
-                          maxHeight: 350,
-                        ),
-                      ),
-                    ),
-                  );
-                } else if (snapshot.hasError) {
-                  return Text('Error: ${snapshot.error}');
-                }
-                return Container();
-              },
-            ),
-
-            const SizedBox(height: 20),
-
             TextField(
-              controller: tenChuDeController,
+              controller: maMonHocController,
               decoration: InputDecoration(
-                labelText: "Tên chủ đề",
-                hintText: "Nhập tên chủ đề",
+                labelText: "Mã môn học",
+                hintText: "Nhập mã môn học",
                 labelStyle: TextStyle(color: Theme.of(context).hintColor),
                 hintStyle: const TextStyle(color: Colors.grey),
                 contentPadding: const EdgeInsets.symmetric(vertical: 18, horizontal: 22),
@@ -106,57 +41,77 @@ class _CreateTopicState extends State<CreateTopic> {
                 ),
               ),
             ),
-
             const SizedBox(height: 20),
-
-            ElevatedButton(
-                onPressed: () async {
-                  var tenMonHoc = selectedMonHoc;
-                  var tenChuDe = tenChuDeController.text;
-
-                  if (tenMonHoc.isEmpty && tenChuDe.isEmpty) {
-                    _showErrorDialog('Lỗi', 'Vui lòng chọn Tên môn học và nhập Tên Chủ Đề.');
-                  } else if (tenMonHoc.isEmpty) {
-                    _showErrorDialog("Lỗi", "Vui lòng chọn Tên môn học.");
-                  } else if (tenChuDe.isEmpty) {
-                    _showErrorDialog("Lỗi", "Vui lòng nhập Tên chủ đề.");
-                  } else {
-                    final result = await DatabaseService.insertTopic(tenChuDe, tenMonHoc);
-                    if (result == 'Chủ đề đã được thêm thành công.') {
-                      _showSuccessDialog('Chủ đề đã được thêm thành công, bạn có muốn thêm chủ đề khác không?');
-                      selectedMonHoc.isEmpty;
-                      tenChuDeController.clear();
-                    } else {
-                      _showErrorDialog('Lỗi', result);
-                    }
-                  }
-                },
-                style: ElevatedButton.styleFrom(
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  padding: const EdgeInsets.symmetric(vertical: 15),
+            TextField(
+              controller: tenMonHocController,
+              decoration: InputDecoration(
+                labelText: "Tên môn học",
+                hintText: "Nhập tên môn học",
+                labelStyle: TextStyle(color: Theme.of(context).hintColor),
+                hintStyle: const TextStyle(color: Colors.grey),
+                contentPadding: const EdgeInsets.symmetric(vertical: 18, horizontal: 22),
+                enabledBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(16),
+                  borderSide: const BorderSide(color: Colors.blue),
                 ),
-                child: const Text("Thêm Chủ Đề"))
+                focusedBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(16),
+                  borderSide: const BorderSide(color: Colors.green),
+                ),
+              ),
+            ),
+            const SizedBox(height: 20),
+            ElevatedButton(
+              onPressed: () async {
+                var maMonHoc = maMonHocController.text;
+                var tenMonHoc = tenMonHocController.text;
+
+                if (maMonHoc.isEmpty && tenMonHoc.isEmpty) {
+                  _showErrorDialog('Lỗi', 'Vui lòng nhập Mã môn học và Tên môn học.');
+                } else if (maMonHoc.isEmpty) {
+                  _showErrorDialog("Lỗi", "Vui lòng nhập Mã môn học.");
+                } else if (tenMonHoc.isEmpty) {
+                  _showErrorDialog("Lỗi", "Vui lòng nhập Tên môn học.");
+                } else {
+                  final result = await DatabaseService.insertSubject(maMonHoc, tenMonHoc);
+                  if (result == 'Mã môn học đã tồn tại.') {
+                    _showErrorDialog('Lỗi', result);
+                  } else if (result == 'Môn học đã được thêm thành công.') {
+                    _showSuccessDialog('Môn học đã được thêm thành công, bạn có muốn thêm môn học khác không?');
+                    maMonHocController.clear();
+                    tenMonHocController.clear();
+                  } else {
+                    _showErrorDialog('Lỗi', result);
+                  }
+                }
+              },
+              style: ElevatedButton.styleFrom(
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                padding: const EdgeInsets.symmetric(vertical: 15),
+              ),
+              child: const Text("Thêm Môn Học"),
+            ),
           ],
         ),
       ),
     );
   }
 
-  _appBar() {
+  AppBar _appBar() {
     return AppBar(
       backgroundColor: Colors.white,
       elevation: 10,
       title: const Text(
-        "Tạo Chủ Đề",
+        "Tạo Môn Học",
         style: TextStyle(
           fontSize: 20,
           fontWeight: FontWeight.bold,
           color: Colors.black,
         ),
         textAlign: TextAlign.center,
-        overflow: TextOverflow.ellipsis, // Xử lý văn bản dài
+        overflow: TextOverflow.ellipsis,
       ),
     );
   }
@@ -263,7 +218,8 @@ class _CreateTopicState extends State<CreateTopic> {
           ),
           ElevatedButton(
             onPressed: () {
-              Navigator.push(context, MaterialPageRoute(builder: (context) => const HomeTeacher()));
+              // Navigator.pop(context, false); // Trả về giá trị false khi chọn "Không"
+              Navigator.push(context, MaterialPageRoute(builder: (context) => const QuestionBank()));
             },
             style: ElevatedButton.styleFrom(
               shape: RoundedRectangleBorder(
