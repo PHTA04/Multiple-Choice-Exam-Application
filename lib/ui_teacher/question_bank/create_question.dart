@@ -88,6 +88,7 @@ class _CreateQuestionState extends State<CreateQuestion> {
                             onChanged: (String? selected) async {
                               setState(() {
                                 selectedMonHoc = selected!;
+                                selectedChuDe = '';
                               });
 
                               List<String> topicList =
