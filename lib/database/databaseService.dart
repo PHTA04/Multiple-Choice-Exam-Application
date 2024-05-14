@@ -242,4 +242,26 @@ class DatabaseService {
     }
   }
 
+  static Future<List<String>> getNoiDungCauHoiList(String tenChuDe) async {
+    final response = await http.post(
+      Uri.parse('$baseUrl/getNoiDungCauHoiList'),
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+      },
+      body: jsonEncode(<String, String>{
+        'tenChuDe': tenChuDe,
+      }),
+    );
+
+    if (response.statusCode == 200) {
+      Iterable decodedBody = jsonDecode(response.body);
+      List<String> noiDungCauHoiList = List<String>.from(decodedBody);
+      return noiDungCauHoiList;
+    } else if (response.statusCode == 404) {
+      return [];
+    } else {
+      throw Exception('Failed to load list of questions');
+    }
+  }
+
 }
