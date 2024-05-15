@@ -3,6 +3,7 @@ import 'dart:math';
 import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:flutter/material.dart';
 import 'package:multiple_choice_exam/database/databaseService.dart';
+import 'package:multiple_choice_exam/ui_teacher/exam_management/exam_management.dart';
 import 'package:multiple_choice_exam/ui_teacher/question_bank/create_topic.dart';
 
 class CreateExam extends StatefulWidget {
@@ -338,93 +339,35 @@ class _CreateExamState extends State<CreateExam> {
                 ],
               ),
 
-              // ElevatedButton(
-              //   onPressed: () async {
-              //
-              //   },
-              //   style: ElevatedButton.styleFrom(
-              //     shape: RoundedRectangleBorder(
-              //       borderRadius: BorderRadius.circular(10),
-              //     ),
-              //     padding: const EdgeInsets.symmetric(vertical: 15),
-              //   ),
-              //   child: const Text("Thêm Đề Thi"),
-              // ),
-
               ElevatedButton(
                 onPressed: () async {
-                  final tenDeThi = tenDeThiController.text.trim();
-                  final tenMonHoc = selectedMonHoc;
-                  final danhSachCauHoi = selectedQuestionsInExam;
 
-                  if (tenDeThi.isEmpty || tenMonHoc.isEmpty || danhSachCauHoi.isEmpty) {
-                    // Hiển thị thông báo lỗi nếu thiếu thông tin
-                    showDialog(
-                      context: context,
-                      builder: (context) => AlertDialog(
-                        title: const Text('Lỗi'),
-                        content: const Text('Vui lòng nhập đầy đủ thông tin và chọn ít nhất một câu hỏi.'),
-                        actions: [
-                          TextButton(
-                            onPressed: () => Navigator.pop(context),
-                            child: const Text('OK'),
-                          ),
-                        ],
-                      ),
-                    );
-                    return;
-                  }
+                  if(selectedMonHoc.isEmpty && selectedChuDe.isEmpty && tenDeThiController.text.isEmpty){
+                    _showErrorDialog("Lỗi", "Vui lòng chon và nhập đầy đủ thông tin.");
+                  } else if(selectedMonHoc.isEmpty){
+                    _showErrorDialog("Lỗi", "Vui lòng chọn Tên môn học.");
+                  } else if(selectedChuDe.isEmpty){
+                    _showErrorDialog("Lỗi", "Vui lòng chọn Tên chủ đề.");
+                  } else if(tenDeThiController.text.isEmpty){
+                    _showErrorDialog("Lỗi", "Vui lòng nhập Tên đề thi.");
+                  } else {
+                    final resultExam = await DatabaseService.insertExam(tenDeThiController.text, selectedMonHoc);
+                    print(resultExam);
 
-                  try {
-                    // Gọi hàm insertExam
-                    final resultExam = await DatabaseService.insertExam(tenDeThi, tenMonHoc);
-                    print(resultExam); // In ra kết quả (nếu cần)
+                    final resultListOfExamQuestion = await DatabaseService.insertListOfExamQuestion(tenDeThiController.text, selectedQuestionsInExam);
+                    print(resultListOfExamQuestion);
 
-                    // Gọi hàm insertListOfExamQuestion
-                    final resultListOfExamQuestion = await DatabaseService.insertListOfExamQuestion(tenDeThi, danhSachCauHoi);
-                    print(resultListOfExamQuestion); // In ra kết quả (nếu cần)
+                    _showSuccessDialog("Đề thi đã được thêm thành công, bạn có muốn thêm đề thi khác không ?");
 
-                    // Hiển thị thông báo thành công
-                    showDialog(
-                      context: context,
-                      builder: (context) => AlertDialog(
-                        title: const Text('Thành công'),
-                        content: const Text('Đề thi đã được thêm thành công.'),
-                        actions: [
-                          TextButton(
-                            onPressed: () => Navigator.pop(context),
-                            child: const Text('OK'),
-                          ),
-                        ],
-                      ),
-                    );
-
-                    // Reset các trường và danh sách câu hỏi đã chọn
                     setState(() {
                       tenDeThiController.clear();
-                      selectedMonHoc = '';
-                      selectedChuDe = '';
+                      selectedChucNang = '';
                       noiDungCauHoiList = [];
                       selectedCauHoi = {};
                       selectedQuestionsInExam = [];
                     });
-                  } catch (error) {
-                    print('Failed to insert exam: $error');
-                    // Hiển thị thông báo lỗi nếu có
-                    showDialog(
-                      context: context,
-                      builder: (context) => AlertDialog(
-                        title: const Text('Lỗi'),
-                        content: Text('Có lỗi xảy ra: $error'),
-                        actions: [
-                          TextButton(
-                            onPressed: () => Navigator.pop(context),
-                            child: const Text('OK'),
-                          ),
-                        ],
-                      ),
-                    );
                   }
+
                 },
                 style: ElevatedButton.styleFrom(
                   shape: RoundedRectangleBorder(
@@ -656,6 +599,124 @@ class _CreateExamState extends State<CreateExam> {
           ],
         );
       },
+    );
+  }
+
+  void _showErrorDialog(String title, String message) {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) => Dialog(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(10),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.all(20.0),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Icon(
+                Icons.error_outline,
+                color: Colors.red,
+                size: 48,
+              ),
+              const SizedBox(height: 16),
+              Text(
+                title,
+                style: const TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              const SizedBox(height: 10),
+              Text(
+                message,
+                style: const TextStyle(fontSize: 14.5),
+              ),
+              const SizedBox(height: 20),
+              ElevatedButton(
+                onPressed: () => Navigator.pop(context),
+                style: ElevatedButton.styleFrom(
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  padding: const EdgeInsets.symmetric(vertical: 15),
+                ),
+                child: const Text("Đóng"),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  void _showSuccessDialog(String message) {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) => AlertDialog(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(10),
+        ),
+        title: Column(
+          children: [
+            const Icon(
+              Icons.check_circle,
+              color: Colors.green,
+              size: 48,
+            ),
+            const SizedBox(height: 16),
+            const Text(
+              'Thông Báo',
+              style: TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+                color: Colors.black,
+              ),
+            ),
+            const SizedBox(height: 8),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              child: Text(
+                message,
+                style: const TextStyle(
+                  fontSize: 16,
+                  color: Colors.black,
+                ),
+                textAlign: TextAlign.center,
+              ),
+            ),
+          ],
+        ),
+        actions: [
+          ElevatedButton(
+            onPressed: () {
+              Navigator.pop(context, true);
+            },
+            style: ElevatedButton.styleFrom(
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(10),
+              ),
+              padding: const EdgeInsets.symmetric(vertical: 15),
+            ),
+            child: const Text('Có'),
+          ),
+          ElevatedButton(
+            onPressed: () {
+              // Navigator.pop(context, false); // Trả về giá trị false khi chọn "Không"
+              Navigator.push(context, MaterialPageRoute(builder: (context) => const ExamManagement()));
+            },
+            style: ElevatedButton.styleFrom(
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(10),
+              ),
+              padding: const EdgeInsets.symmetric(vertical: 15),
+            ),
+            child: const Text('Không'),
+          ),
+        ],
+      ),
     );
   }
 
