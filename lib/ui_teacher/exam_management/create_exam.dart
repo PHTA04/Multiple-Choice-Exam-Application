@@ -378,28 +378,30 @@ class _CreateExamState extends State<CreateExam> {
                               textAlign: TextAlign.center, // Căn giữa tiêu đề
                             ),
                           ),
-
                           Divider(
                             thickness: 1.0, // Độ dày của đường ngăn cách
                             color: Colors.grey.shade300, // Màu của đường ngăn cách
                             indent: 16.0, // Lề bên trái của đường ngăn cách
                             endIndent: 16.0, // Lề bên phải của đường ngăn cách
                           ),
-
                           Column(
                             children: noiDungCauHoiList.map((cauHoi) {
+                              final bool isInExam = selectedQuestionsInExam.contains(cauHoi);
                               return Padding(
                                 padding: const EdgeInsets.symmetric(vertical: 8.0),
                                 child: CheckboxListTile(
                                   title: Text(
                                     cauHoi,
-                                    style: const TextStyle(
+                                    style: TextStyle(
                                       fontSize: 16.0,
                                       fontWeight: FontWeight.normal,
+                                      color: isInExam ? Colors.grey : Colors.black, // Make text grey if already in exam
                                     ),
                                   ),
-                                  value: selectedCauHoi[cauHoi],
-                                  onChanged: (bool? value) {
+                                  value: selectedCauHoi[cauHoi]! && !isInExam,
+                                  onChanged: isInExam
+                                      ? null // Disable checkbox if question is already in exam
+                                      : (bool? value) {
                                     setState(() {
                                       selectedCauHoi[cauHoi] = value ?? false;
                                     });
@@ -411,12 +413,10 @@ class _CreateExamState extends State<CreateExam> {
                               );
                             }).toList(),
                           ),
-
                           ElevatedButton(
                             onPressed: () async {
-                              // selectedQuestionsInExam.clear();
                               selectedCauHoi.forEach((cauHoi, isSelected) {
-                                if (isSelected) {
+                                if (isSelected && !selectedQuestionsInExam.contains(cauHoi)) {
                                   selectedQuestionsInExam.add(cauHoi);
                                 }
                               });
@@ -435,6 +435,7 @@ class _CreateExamState extends State<CreateExam> {
                     ),
                   ],
                 ),
+
             ],
           ),
         ),
@@ -548,9 +549,19 @@ class _CreateExamState extends State<CreateExam> {
                 int quantity = int.tryParse(quantityController.text) ?? 0;
                 if (quantity > 0) {
                   List<String> cauHoiList = await DatabaseService.getNoiDungCauHoiList(selectedChuDe);
-                  cauHoiList.shuffle(Random());
+
+                  // Lọc ra các câu hỏi đã có trong selectedQuestionsInExam
+                  List<String> filteredCauHoiList = cauHoiList.where((cauHoi) => !selectedQuestionsInExam.contains(cauHoi)).toList();
+
+                  // Nếu số lượng yêu cầu lớn hơn số lượng câu hỏi sau khi lọc, giới hạn lại số lượng
+                  if (quantity > filteredCauHoiList.length) {
+                    quantity = filteredCauHoiList.length;
+                  }
+
+                  // Shuffle và chọn ngẫu nhiên các câu hỏi
+                  filteredCauHoiList.shuffle(Random());
                   setState(() {
-                    selectedQuestionsInExam.addAll(cauHoiList.take(quantity));
+                    selectedQuestionsInExam.addAll(filteredCauHoiList.take(quantity));
                   });
                 }
                 Navigator.of(context).pop();
