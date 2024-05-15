@@ -21,8 +21,10 @@ class _CreateTestState extends State<CreateTest> {
   String selectedChuDe = '';
 
   TextEditingController thoiGianLamBaiController = TextEditingController();
-  TextEditingController thoiGianBatDauController = MaskedTextController(mask: '00/00/0000');
-  TextEditingController thoiGianKetThucController = MaskedTextController(mask: '00/00/0000');
+  TextEditingController ngayBatDauController = MaskedTextController(mask: '00/00/0000');
+  TextEditingController ngayKetThucController = MaskedTextController(mask: '00/00/0000');
+  TextEditingController gioBatDauController = MaskedTextController(mask: '00:00');
+  TextEditingController gioKetThucController = MaskedTextController(mask: '00:00');
   TextEditingController soLanLamBaiController = TextEditingController();
 
 
@@ -187,93 +189,181 @@ class _CreateTestState extends State<CreateTest> {
               ),
               const SizedBox(height: 20),
 
-              TextFormField(
-                controller: thoiGianBatDauController,
-                keyboardType: TextInputType.datetime,
-                decoration: InputDecoration(
-                  labelText: "Thời gian bắt đầu",
-                  hintText: "DD/MM/YYYY",
-                  labelStyle: TextStyle(color: Theme.of(context).hintColor),
-                  hintStyle: const TextStyle(color: Colors.grey),
-                  contentPadding: const EdgeInsets.symmetric(vertical: 18, horizontal: 22),
-                  enabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(16),
-                    borderSide: const BorderSide(color: Colors.blue),
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(16),
-                    borderSide: const BorderSide(color: Colors.green),
-                  ),
-                  suffixIcon: IconButton(
-                    onPressed: () {
-                      // Hiển thị lịch khi nhấn vào icon
-                      showDatePicker(
-                        context: context,
-                        initialDate: DateTime.now(),
-                        firstDate: DateTime(2000),
-                        lastDate: DateTime(2100),
-                      ).then((selectedDate) {
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Expanded(
+                      child: TextFormField(
+                        controller: ngayBatDauController,
+                        keyboardType: TextInputType.datetime,
+                        decoration: InputDecoration(
+                          labelText: "Ngày bắt đầu",
+                          hintText: "DD/MM/YYYY",
+                          labelStyle: TextStyle(color: Theme.of(context).hintColor),
+                          hintStyle: const TextStyle(color: Colors.grey),
+                          contentPadding: const EdgeInsets.symmetric(vertical: 18, horizontal: 22),
+                          enabledBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(16),
+                            borderSide: const BorderSide(color: Colors.blue),
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(16),
+                            borderSide: const BorderSide(color: Colors.green),
+                          ),
+                          suffixIcon: IconButton(
+                            onPressed: () {
+                              // Hiển thị lịch khi nhấn vào icon
+                              showDatePicker(
+                                context: context,
+                                initialDate: DateTime.now(),
+                                firstDate: DateTime(2000),
+                                lastDate: DateTime(2100),
+                              ).then((selectedDate) {
 
-                        if (selectedDate != null) {
-                          if (selectedDate.month < 10) {
-                            thoiGianBatDauController.text =
-                            "${selectedDate.day}/0${selectedDate.month}/${selectedDate.year}";
-                          } else {
-                            thoiGianBatDauController.text =
-                            "${selectedDate.day}/${selectedDate.month}/${selectedDate.year}";
-                          }
-                        }
+                                if (selectedDate != null) {
+                                  if (selectedDate.month < 10) {
+                                    ngayBatDauController.text =
+                                    "${selectedDate.day}/0${selectedDate.month}/${selectedDate.year}";
+                                  } else {
+                                    ngayBatDauController.text =
+                                    "${selectedDate.day}/${selectedDate.month}/${selectedDate.year}";
+                                  }
+                                }
 
-                      });
-                    },
-                    icon: const Icon(Icons.access_time_rounded),
+                              });
+                            },
+                            icon: const Icon(Icons.date_range_outlined),
+                          ),
+                        ),
+                      ),
                   ),
-                ),
+
+                  const SizedBox(width: 10),
+
+                  Expanded(
+                      child: TextFormField(
+                        controller: ngayKetThucController,
+                        keyboardType: TextInputType.datetime,
+                        decoration: InputDecoration(
+                          labelText: "Ngày kết thúc",
+                          hintText: "DD/MM/YYYY",
+                          labelStyle: TextStyle(color: Theme.of(context).hintColor),
+                          hintStyle: const TextStyle(color: Colors.grey),
+                          contentPadding: const EdgeInsets.symmetric(vertical: 18, horizontal: 22),
+                          enabledBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(16),
+                            borderSide: const BorderSide(color: Colors.blue),
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(16),
+                            borderSide: const BorderSide(color: Colors.green),
+                          ),
+                          suffixIcon: IconButton(
+                            onPressed: () {
+                              // Hiển thị lịch khi nhấn vào icon
+                              showDatePicker(
+                                context: context,
+                                initialDate: DateTime.now(),
+                                firstDate: DateTime(2000),
+                                lastDate: DateTime(2100),
+                              ).then((selectedDate) {
+
+                                if (selectedDate != null) {
+                                  if (selectedDate.month < 10) {
+                                    ngayKetThucController.text =
+                                    "${selectedDate.day}/0${selectedDate.month}/${selectedDate.year}";
+                                  } else {
+                                    ngayKetThucController.text =
+                                    "${selectedDate.day}/${selectedDate.month}/${selectedDate.year}";
+                                  }
+                                }
+
+                              });
+                            },
+                            icon: const Icon(Icons.date_range_outlined),
+                          ),
+                        ),
+                      ),
+                  ),
+                ],
               ),
               const SizedBox(height: 20),
 
-              TextFormField(
-                controller: thoiGianKetThucController,
-                keyboardType: TextInputType.datetime,
-                decoration: InputDecoration(
-                  labelText: "Thời gian kết thúc",
-                  hintText: "DD/MM/YYYY",
-                  labelStyle: TextStyle(color: Theme.of(context).hintColor),
-                  hintStyle: const TextStyle(color: Colors.grey),
-                  contentPadding: const EdgeInsets.symmetric(vertical: 18, horizontal: 22),
-                  enabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(16),
-                    borderSide: const BorderSide(color: Colors.blue),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Expanded(
+                    child: TextFormField(
+                      controller: gioBatDauController,
+                      keyboardType: TextInputType.datetime,
+                      decoration: InputDecoration(
+                        labelText: "Giờ bắt đầu",
+                        hintText: "HH:MM",
+                        labelStyle: TextStyle(color: Theme.of(context).hintColor),
+                        hintStyle: const TextStyle(color: Colors.grey),
+                        contentPadding: const EdgeInsets.symmetric(vertical: 18, horizontal: 22),
+                        enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(16),
+                          borderSide: const BorderSide(color: Colors.blue),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(16),
+                          borderSide: const BorderSide(color: Colors.green),
+                        ),
+                        suffixIcon: IconButton(
+                          onPressed: () {
+                            // Hiển thị chọn giờ khi nhấn vào icon
+                            showTimePicker(
+                              context: context,
+                              initialTime: TimeOfDay.now(),
+                            ).then((selectedTime) {
+                              if (selectedTime != null) {
+                                gioBatDauController.text = "${selectedTime.hour.toString().padLeft(2, '0')}:${selectedTime.minute.toString().padLeft(2, '0')}";
+                              }
+                            });
+                          },
+                          icon: const Icon(Icons.access_time),
+                        ),
+                      ),
+                    ),
                   ),
-                  focusedBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(16),
-                    borderSide: const BorderSide(color: Colors.green),
+                  const SizedBox(width: 10),
+                  Expanded(
+                    child: TextFormField(
+                      controller: gioKetThucController,
+                      keyboardType: TextInputType.datetime,
+                      decoration: InputDecoration(
+                        labelText: "Giờ kết thúc",
+                        hintText: "HH:MM",
+                        labelStyle: TextStyle(color: Theme.of(context).hintColor),
+                        hintStyle: const TextStyle(color: Colors.grey),
+                        contentPadding: const EdgeInsets.symmetric(vertical: 18, horizontal: 22),
+                        enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(16),
+                          borderSide: const BorderSide(color: Colors.blue),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(16),
+                          borderSide: const BorderSide(color: Colors.green),
+                        ),
+                        suffixIcon: IconButton(
+                          onPressed: () {
+                            // Hiển thị chọn giờ khi nhấn vào icon
+                            showTimePicker(
+                              context: context,
+                              initialTime: TimeOfDay.now(),
+                            ).then((selectedTime) {
+                              if (selectedTime != null) {
+                                gioKetThucController.text = "${selectedTime.hour.toString().padLeft(2, '0')}:${selectedTime.minute.toString().padLeft(2, '0')}";
+                              }
+                            });
+                          },
+                          icon: const Icon(Icons.access_time),
+                        ),
+                      ),
+                    ),
                   ),
-                  suffixIcon: IconButton(
-                    onPressed: () {
-                      // Hiển thị lịch khi nhấn vào icon
-                      showDatePicker(
-                        context: context,
-                        initialDate: DateTime.now(),
-                        firstDate: DateTime(2000),
-                        lastDate: DateTime(2100),
-                      ).then((selectedDate) {
-
-                        if (selectedDate != null) {
-                          if (selectedDate.month < 10) {
-                            thoiGianKetThucController.text =
-                            "${selectedDate.day}/0${selectedDate.month}/${selectedDate.year}";
-                          } else {
-                            thoiGianKetThucController.text =
-                            "${selectedDate.day}/${selectedDate.month}/${selectedDate.year}";
-                          }
-                        }
-
-                      });
-                    },
-                    icon: const Icon(Icons.access_time_rounded),
-                  ),
-                ),
+                ],
               ),
               const SizedBox(height: 20),
 
