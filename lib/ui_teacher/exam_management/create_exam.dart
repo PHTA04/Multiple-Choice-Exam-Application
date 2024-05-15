@@ -488,6 +488,51 @@ class _CreateExamState extends State<CreateExam> {
     );
   }
 
+  void _showRandomQuestionDialog() {
+    showDialog(
+      context: context,
+      builder: (context) {
+        TextEditingController quantityController = TextEditingController();
+        return AlertDialog(
+          title: const Text("Nhập số lượng câu hỏi"),
+          content: TextField(
+            controller: quantityController,
+            keyboardType: TextInputType.number,
+            decoration: const InputDecoration(
+              hintText: "Số lượng câu hỏi",
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () async {
+                int quantity = int.tryParse(quantityController.text) ?? 0;
+                if (quantity > 0) {
+                  List<String> cauHoiList = await DatabaseService.getNoiDungCauHoiList(selectedChuDe);
+
+                  // Lọc ra các câu hỏi đã có trong selectedQuestionsInExam
+                  List<String> filteredCauHoiList = cauHoiList.where((cauHoi) => !selectedQuestionsInExam.contains(cauHoi)).toList();
+
+                  // Nếu số lượng yêu cầu lớn hơn số lượng câu hỏi sau khi lọc, giới hạn lại số lượng
+                  if (quantity > filteredCauHoiList.length) {
+                    quantity = filteredCauHoiList.length;
+                  }
+
+                  // Shuffle và chọn ngẫu nhiên các câu hỏi
+                  filteredCauHoiList.shuffle(Random());
+                  setState(() {
+                    selectedQuestionsInExam.addAll(filteredCauHoiList.take(quantity));
+                  });
+                }
+                Navigator.of(context).pop();
+              },
+              child: const Text("OK"),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   void _showTopicNullDialog(String message) {
     showDialog(
       context: context,
@@ -554,51 +599,6 @@ class _CreateExamState extends State<CreateExam> {
           ),
         ],
       ),
-    );
-  }
-
-  void _showRandomQuestionDialog() {
-    showDialog(
-      context: context,
-      builder: (context) {
-        TextEditingController quantityController = TextEditingController();
-        return AlertDialog(
-          title: const Text("Nhập số lượng câu hỏi"),
-          content: TextField(
-            controller: quantityController,
-            keyboardType: TextInputType.number,
-            decoration: const InputDecoration(
-              hintText: "Số lượng câu hỏi",
-            ),
-          ),
-          actions: [
-            TextButton(
-              onPressed: () async {
-                int quantity = int.tryParse(quantityController.text) ?? 0;
-                if (quantity > 0) {
-                  List<String> cauHoiList = await DatabaseService.getNoiDungCauHoiList(selectedChuDe);
-
-                  // Lọc ra các câu hỏi đã có trong selectedQuestionsInExam
-                  List<String> filteredCauHoiList = cauHoiList.where((cauHoi) => !selectedQuestionsInExam.contains(cauHoi)).toList();
-
-                  // Nếu số lượng yêu cầu lớn hơn số lượng câu hỏi sau khi lọc, giới hạn lại số lượng
-                  if (quantity > filteredCauHoiList.length) {
-                    quantity = filteredCauHoiList.length;
-                  }
-
-                  // Shuffle và chọn ngẫu nhiên các câu hỏi
-                  filteredCauHoiList.shuffle(Random());
-                  setState(() {
-                    selectedQuestionsInExam.addAll(filteredCauHoiList.take(quantity));
-                  });
-                }
-                Navigator.of(context).pop();
-              },
-              child: const Text("OK"),
-            ),
-          ],
-        );
-      },
     );
   }
 
