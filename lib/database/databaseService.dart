@@ -264,4 +264,40 @@ class DatabaseService {
     }
   }
 
+  static Future<String> insertExam(String tenDeThi, String tenMonHoc) async {
+    final response = await http.post(
+      Uri.parse('$baseUrl/insertExam'),
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+      },
+      body: jsonEncode(<String, String>{
+        'tenDeThi': tenDeThi,
+        'tenMonHoc': tenMonHoc,
+      }),
+    );
+    if (response.statusCode == 200) {
+      return response.body;
+    } else {
+      throw Exception('Failed to insert exam');
+    }
+  }
+
+  static Future<String> insertListOfExamQuestion(String tenDeThi, List<String> danhSachCauHoi) async {
+    final response = await http.post(
+      Uri.parse('$baseUrl/insertListOfExamQuestion'),
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+      },
+      body: jsonEncode(<String, dynamic>{
+        'tenDeThi': tenDeThi,
+        'danhSachCauHoi': danhSachCauHoi,
+      }),
+    );
+    if (response.statusCode == 200) {
+      return response.body;
+    } else {
+      throw Exception('Failed to insert list of exam questions');
+    }
+  }
+
 }

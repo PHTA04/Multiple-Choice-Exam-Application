@@ -338,9 +338,93 @@ class _CreateExamState extends State<CreateExam> {
                 ],
               ),
 
+              // ElevatedButton(
+              //   onPressed: () async {
+              //
+              //   },
+              //   style: ElevatedButton.styleFrom(
+              //     shape: RoundedRectangleBorder(
+              //       borderRadius: BorderRadius.circular(10),
+              //     ),
+              //     padding: const EdgeInsets.symmetric(vertical: 15),
+              //   ),
+              //   child: const Text("Thêm Đề Thi"),
+              // ),
+
               ElevatedButton(
                 onPressed: () async {
+                  final tenDeThi = tenDeThiController.text.trim();
+                  final tenMonHoc = selectedMonHoc;
+                  final danhSachCauHoi = selectedQuestionsInExam;
 
+                  if (tenDeThi.isEmpty || tenMonHoc.isEmpty || danhSachCauHoi.isEmpty) {
+                    // Hiển thị thông báo lỗi nếu thiếu thông tin
+                    showDialog(
+                      context: context,
+                      builder: (context) => AlertDialog(
+                        title: const Text('Lỗi'),
+                        content: const Text('Vui lòng nhập đầy đủ thông tin và chọn ít nhất một câu hỏi.'),
+                        actions: [
+                          TextButton(
+                            onPressed: () => Navigator.pop(context),
+                            child: const Text('OK'),
+                          ),
+                        ],
+                      ),
+                    );
+                    return;
+                  }
+
+                  try {
+                    // Gọi hàm insertExam
+                    final resultExam = await DatabaseService.insertExam(tenDeThi, tenMonHoc);
+                    print(resultExam); // In ra kết quả (nếu cần)
+
+                    // Gọi hàm insertListOfExamQuestion
+                    final resultListOfExamQuestion = await DatabaseService.insertListOfExamQuestion(tenDeThi, danhSachCauHoi);
+                    print(resultListOfExamQuestion); // In ra kết quả (nếu cần)
+
+                    // Hiển thị thông báo thành công
+                    showDialog(
+                      context: context,
+                      builder: (context) => AlertDialog(
+                        title: const Text('Thành công'),
+                        content: const Text('Đề thi đã được thêm thành công.'),
+                        actions: [
+                          TextButton(
+                            onPressed: () => Navigator.pop(context),
+                            child: const Text('OK'),
+                          ),
+                        ],
+                      ),
+                    );
+
+                    // Reset các trường và danh sách câu hỏi đã chọn
+                    setState(() {
+                      tenDeThiController.clear();
+                      selectedMonHoc = '';
+                      selectedChuDe = '';
+                      noiDungCauHoiList = [];
+                      selectedCauHoi = {};
+                      selectedQuestionsInExam = [];
+                    });
+                  } catch (error) {
+                    print('Failed to insert exam: $error');
+                    // Hiển thị thông báo lỗi nếu có
+                    showDialog(
+                      context: context,
+                      builder: (context) => AlertDialog(
+                        title: const Text('Lỗi'),
+                        content: Text('Có lỗi xảy ra: $error'),
+                        actions: [
+                          TextButton(
+                            onPressed: () => Navigator.pop(context),
+                            child: const Text('OK'),
+                          ),
+                        ],
+                      ),
+                    );
+                  }
                 },
                 style: ElevatedButton.styleFrom(
                   shape: RoundedRectangleBorder(
@@ -350,6 +434,7 @@ class _CreateExamState extends State<CreateExam> {
                 ),
                 child: const Text("Thêm Đề Thi"),
               ),
+
               const SizedBox(height: 20),
 
               if (selectedChucNang == 'Lấy Danh Sách Các Câu Hỏi Trong Chủ Đề' && noiDungCauHoiList.isNotEmpty)
