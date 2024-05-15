@@ -27,6 +27,8 @@ class _CreateTestState extends State<CreateTest> {
   TextEditingController gioKetThucController = MaskedTextController(mask: '00:00');
   TextEditingController soLanLamBaiController = TextEditingController();
 
+  String selectedOption = 'Có';
+
 
   @override
   Widget build(BuildContext context) {
@@ -386,6 +388,81 @@ class _CreateTestState extends State<CreateTest> {
                     borderSide: const BorderSide(color: Colors.green),
                   ),
                 ),
+              ),
+              const SizedBox(height: 20),
+
+              Row(
+                // crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text(
+                    'Cho phép xem lại bài thi: ',
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.black,
+                    ),
+                  ),
+                  const SizedBox(width: 10), // Khoảng cách giữa text và các nút option
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      GestureDetector(
+                        onTap: () {
+                          setState(() {
+                            selectedOption = 'Có';
+                          });
+                        },
+                        child: Row(
+                          children: [
+                            Radio(
+                              value: 'Có',
+                              groupValue: selectedOption,
+                              onChanged: (String? value) {
+                                setState(() {
+                                  selectedOption = value!;
+                                });
+                              },
+                            ),
+                            Text(
+                              'Có',
+                              style: TextStyle(
+                                fontSize: 16,
+                                color: selectedOption == 'Có' ? Colors.blue : Colors.black,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      GestureDetector(
+                        onTap: () {
+                          setState(() {
+                            selectedOption = 'Không';
+                          });
+                        },
+                        child: Row(
+                          children: [
+                            Radio(
+                              value: 'Không',
+                              groupValue: selectedOption,
+                              onChanged: (String? value) {
+                                setState(() {
+                                  selectedOption = value!;
+                                });
+                              },
+                            ),
+                            Text(
+                              'Không',
+                              style: TextStyle(
+                                fontSize: 16,
+                                color: selectedOption == 'Không' ? Colors.blue : Colors.black,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
               ),
               const SizedBox(height: 20),
 
