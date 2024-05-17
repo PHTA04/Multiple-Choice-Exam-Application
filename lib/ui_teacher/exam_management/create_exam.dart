@@ -343,7 +343,7 @@ class _CreateExamState extends State<CreateExam> {
                 onPressed: () async {
 
                   if(selectedMonHoc.isEmpty && selectedChuDe.isEmpty && tenDeThiController.text.isEmpty){
-                    _showErrorDialog("Lỗi", "Vui lòng chon và nhập đầy đủ thông tin.");
+                    _showErrorDialog("Lỗi", "Vui lòng chọn và nhập đầy đủ thông tin.");
                   } else if(selectedMonHoc.isEmpty){
                     _showErrorDialog("Lỗi", "Vui lòng chọn Tên môn học.");
                   } else if(selectedChuDe.isEmpty){

@@ -2,7 +2,7 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 
 class DatabaseService {
-  static const String ipName = '192.168.1.3';
+  static const String ipName = '192.168.1.5';
   static const String port = '2612';
   static const String baseUrl = 'http://$ipName:$port';
 
@@ -297,6 +297,80 @@ class DatabaseService {
       return response.body;
     } else {
       throw Exception('Failed to insert list of exam questions');
+    }
+  }
+
+  static Future<List<String>> getTenDeThiList(String tenMonHoc) async {
+    // Kiểm tra nếu tenMonHoc là null hoặc chuỗi trống
+    if (tenMonHoc == null || tenMonHoc.isEmpty) {
+      // Trả về danh sách rỗng
+      return [];
+    }
+
+    final response = await http.post(
+      Uri.parse('$baseUrl/getTenDeThiList'),
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+      },
+      body: jsonEncode(<String, String>{
+        'tenMonHoc': tenMonHoc,
+      }),
+    );
+
+    if (response.statusCode == 200) {
+      // Chuyển đổi dữ liệu từ dạng JSON sang List<String>
+      var decodedBody = jsonDecode(response.body);
+      if (decodedBody is List) {
+        if (decodedBody.isEmpty) {
+          return [];
+        } else {
+          List<String> tenDeThiList = List<String>.from(decodedBody);
+          return tenDeThiList;
+        }
+      } else if (decodedBody == null) {
+        // Trường hợp nếu trả về thông báo không tìm thấy chủ đề
+        return [];
+      } else {
+        // Nếu không phải List, có thể xảy ra lỗi hoặc dữ liệu không hợp lệ
+        throw Exception('Invalid response format');
+      }
+    } else {
+      throw Exception('Failed to load list of exams');
+    }
+  }
+
+  static Future<String> insertTest(
+      String tenDeThi,
+      String tenBaiThi,
+      int thoiGianLamBai,
+      String ngayBatDau,
+      String ngayKetThuc,
+      String gioBatDau,
+      String gioKetThuc,
+      int soLanLamBai,
+      bool choPhepXemLai,
+      ) async {
+    final response = await http.post(
+      Uri.parse('$baseUrl/insertTest'),
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+      },
+      body: jsonEncode(<String, dynamic>{
+        'tenDeThi': tenDeThi,
+        'tenBaiThi': tenBaiThi,
+        'thoiGianLamBai': thoiGianLamBai,
+        'ngayBatDau': ngayBatDau,
+        'ngayKetThuc': ngayKetThuc,
+        'gioBatDau': gioBatDau,
+        'gioKetThuc': gioKetThuc,
+        'soLanLamBai': soLanLamBai,
+        'choPhepXemLai': choPhepXemLai,
+      }),
+    );
+    if (response.statusCode == 200) {
+      return response.body;
+    } else {
+      throw Exception('Failed to insert test');
     }
   }
 

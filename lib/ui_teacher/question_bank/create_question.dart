@@ -128,6 +128,7 @@ class _CreateQuestionState extends State<CreateQuestion> {
                   },
                 ),
                 const SizedBox(height: 20),
+
                 FutureBuilder<List<String>>(
                   future: DatabaseService.getTenChuDeList(selectedMonHoc),
                   builder: (context, snapshot) {
@@ -185,6 +186,7 @@ class _CreateQuestionState extends State<CreateQuestion> {
                   },
                 ),
                 const SizedBox(height: 20),
+
                 Container(
                   decoration: BoxDecoration(
                     border: Border.all(
@@ -232,6 +234,7 @@ class _CreateQuestionState extends State<CreateQuestion> {
                   ),
                 ),
                 const SizedBox(height: 20),
+
                 TextField(
                   controller: ndCauHoiController,
                   decoration: InputDecoration(
@@ -484,7 +487,7 @@ class _CreateQuestionState extends State<CreateQuestion> {
                 ElevatedButton(
                     onPressed: () async {
                       if(selectedMonHoc.isEmpty && selectedChuDe.isEmpty && selectedLoaiCauHoi.isEmpty && ndCauHoiController.text.isEmpty){
-                        _showErrorDialog("Lỗi", "Vui lòng chon và nhập đầy đủ thông tin.");
+                        _showErrorDialog("Lỗi", "Vui lòng chọn và nhập đầy đủ thông tin.");
                       } else if(selectedMonHoc.isEmpty){
                         _showErrorDialog("Lỗi", "Vui lòng chọn Tên môn học.");
                       } else if(selectedChuDe.isEmpty){
