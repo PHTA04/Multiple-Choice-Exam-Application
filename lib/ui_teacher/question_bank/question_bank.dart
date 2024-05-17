@@ -25,7 +25,7 @@ class _QuestionBankState extends State<QuestionBank> {
     const ExamManagement(),
     const TestAdministration(),
     const ScoreManagement(),
-    const SignIn(),
+    // const SignIn(),
   ];
 
   void _onItemTapped(int index) {
@@ -59,10 +59,10 @@ class _QuestionBankState extends State<QuestionBank> {
             icon: Icon(Icons.score),
             label: 'Quản Lý Điểm',
           ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.logout),
-            label: 'Đăng Xuất',
-          ),
+          // BottomNavigationBarItem(
+          //   icon: Icon(Icons.logout),
+          //   label: 'Đăng Xuất',
+          // ),
         ],
         currentIndex: _selectedIndex,
         selectedItemColor: Colors.blue,
@@ -114,8 +114,8 @@ class _QuestionBankState extends State<QuestionBank> {
         return "Quản Lý Bài Thi";
       case 3:
         return "Quản Lý Điểm";
-      case 4:
-        return "Đăng Xuất";
+      // case 4:
+      //   return "Đăng Xuất";
       default:
         return "Ngân Hàng Câu Hỏi";
     }

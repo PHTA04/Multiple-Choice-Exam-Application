@@ -2,6 +2,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:multiple_choice_exam/ui_teacher/question_bank/question_bank.dart';
 import 'package:multiple_choice_exam/ui_teacher/question_bank/theme.dart';
+import 'package:multiple_choice_exam/ui_teacher/register_login/sign_in.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -28,7 +29,8 @@ class MyApp extends StatelessWidget {
       theme: Themes.light,
       darkTheme: Themes.dark,
       themeMode: ThemeMode.light,
-      home: const QuestionBank(),
+      // home: const QuestionBank(),
+      home: const SignIn(),
     );
   }
 }
