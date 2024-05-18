@@ -44,16 +44,16 @@ class _SignInState extends State<SignIn> {
                   children: [
                     TextFormField(
                       decoration: const InputDecoration(
-                        labelText: 'Tên đăng nhập',
+                        labelText: 'Tên Đăng Nhập hoặc Email',
                         border: OutlineInputBorder(),
-                        prefixIcon: Icon(Icons.person_2_outlined),
+                        prefixIcon: Icon(Icons.account_circle_outlined),
                       ),
                     ),
                     const SizedBox(height: 20.0),
 
                     TextFormField(
                       decoration: InputDecoration(
-                        labelText: 'Mật khẩu',
+                        labelText: 'Mật Khẩu',
                         border: const OutlineInputBorder(),
                         prefixIcon: const Icon(Icons.lock_outline_rounded),
                         suffixIcon: IconButton(
