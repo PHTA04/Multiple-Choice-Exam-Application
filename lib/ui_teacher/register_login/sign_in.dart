@@ -1,6 +1,9 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:multiple_choice_exam/database/firebaseService.dart';
 import 'package:multiple_choice_exam/ui_teacher/question_bank/question_bank.dart';
 import 'package:multiple_choice_exam/ui_teacher/register_login/register.dart';
+import 'package:multiple_choice_exam/ui_student/home_sinhvien.dart';
 
 class SignIn extends StatefulWidget {
   const SignIn({super.key});
@@ -12,6 +15,44 @@ class SignIn extends StatefulWidget {
 class _SignInState extends State<SignIn> {
 
   bool _isObscure = true;
+
+  final TextEditingController tenDangNhapOrEmailController = TextEditingController();
+  final TextEditingController matKhauController = TextEditingController();
+  final FirebaseService _firebaseService = FirebaseService();
+
+  void _signIn() async {
+    final tenDangNhapOrEmail = tenDangNhapOrEmailController.text;
+    final matKhau = matKhauController.text;
+
+    try {
+      User? user = await _firebaseService.signInWithEmailOrUsername(tenDangNhapOrEmail, matKhau);
+      if (user != null) {
+        String? userType = await _firebaseService.getUserType(user.uid);
+        if (userType == 'SinhVien') {
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (context) => const HomeSinhVien()),
+          );
+        } else if (userType == 'GiaoVien') {
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (context) => const QuestionBank()),
+          );
+        }
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Đăng nhập thành công!')),
+        );
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Đăng nhập thất bại!')),
+        );
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Đăng nhập thất bại: $e')),
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -43,6 +84,7 @@ class _SignInState extends State<SignIn> {
                 child: Column(
                   children: [
                     TextFormField(
+                      controller: tenDangNhapOrEmailController,
                       decoration: const InputDecoration(
                         labelText: 'Tên Đăng Nhập hoặc Email',
                         border: OutlineInputBorder(),
@@ -52,6 +94,7 @@ class _SignInState extends State<SignIn> {
                     const SizedBox(height: 20.0),
 
                     TextFormField(
+                      controller: matKhauController,
                       decoration: InputDecoration(
                         labelText: 'Mật Khẩu',
                         border: const OutlineInputBorder(),
@@ -72,9 +115,7 @@ class _SignInState extends State<SignIn> {
                     const SizedBox(height: 20.0),
 
                     ElevatedButton(
-                      onPressed: () {
-
-                      },
+                      onPressed: _signIn,
                       child: const Text('Đăng Nhập'),
                     ),
                     const SizedBox(height: 10.0),
