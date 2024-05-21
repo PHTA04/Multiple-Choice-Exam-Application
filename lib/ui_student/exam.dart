@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'dart:async';
-
 import 'package:multiple_choice_exam/database/databaseService.dart';
+import 'package:multiple_choice_exam/ui_student/test_screen.dart';
+
 
 class Exam extends StatefulWidget {
   const Exam({super.key});
@@ -11,7 +12,6 @@ class Exam extends StatefulWidget {
 }
 
 class _ExamState extends State<Exam> {
-
   List<Map<String, dynamic>> openTests = [];
   bool isLoading = true;
 
@@ -40,11 +40,15 @@ class _ExamState extends State<Exam> {
           return Card(
             child: ListTile(
               title: Text(test['tenBaiThi']),
-              subtitle: Text(
-                  'Thời gian làm bài: ${test['thoiGianLamBai']} phút'),
+              subtitle: Text('Thời gian làm bài: ${test['thoiGianLamBai']} phút'),
               trailing: ElevatedButton(
                 onPressed: () {
-                  print('Bắt đầu bài thi: ${test['tenBaiThi']}');
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => TestScreen(maBaiThi: test['maBaiThi']),
+                    ),
+                  );
                 },
                 child: const Text('Bắt đầu'),
               ),
@@ -70,10 +74,8 @@ class _ExamState extends State<Exam> {
             hour: int.parse(test['gioKetThuc'].split(':')[0]),
             minute: int.parse(test['gioKetThuc'].split(':')[1]));
 
-        DateTime startTime = DateTime(ngayBatDau.year, ngayBatDau.month,
-            ngayBatDau.day, gioBatDau.hour, gioBatDau.minute);
-        DateTime endTime = DateTime(ngayKetThuc.year, ngayKetThuc.month,
-            ngayKetThuc.day, gioKetThuc.hour, gioKetThuc.minute);
+        DateTime startTime = DateTime(ngayBatDau.year, ngayBatDau.month, ngayBatDau.day, gioBatDau.hour, gioBatDau.minute);
+        DateTime endTime = DateTime(ngayKetThuc.year, ngayKetThuc.month, ngayKetThuc.day, gioKetThuc.hour, gioKetThuc.minute);
 
         return now.isAfter(startTime) && now.isBefore(endTime);
       }).toList();
@@ -89,5 +91,4 @@ class _ExamState extends State<Exam> {
       });
     }
   }
-
 }
