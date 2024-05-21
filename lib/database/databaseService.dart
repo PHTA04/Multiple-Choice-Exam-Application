@@ -374,4 +374,38 @@ class DatabaseService {
     }
   }
 
+  static Future<List<Map<String, dynamic>>> getTest() async {
+    final response = await http.get(Uri.parse('$baseUrl/getTest'));
+    if (response.statusCode == 200) {
+      Iterable decodedBody = jsonDecode(response.body);
+      List<Map<String, dynamic>> baiThiList = List<Map<String, dynamic>>.from(decodedBody);
+      return baiThiList;
+    } else {
+      throw Exception('Failed to load list of tests');
+    }
+  }
+
+  static Future<List<Map<String, dynamic>>> getDanhSachCauHoiDeThi(int maBaiThi) async {
+    final response = await http.post(
+      Uri.parse('$baseUrl/getDanhSachCauHoiDeThi'),
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+      },
+      body: jsonEncode(<String, int>{
+        'maBaiThi': maBaiThi,
+      }),
+    );
+
+    if (response.statusCode == 200) {
+      Iterable decodedBody = jsonDecode(response.body);
+      List<Map<String, dynamic>> cauHoiList = List<Map<String, dynamic>>.from(decodedBody);
+      return cauHoiList;
+    } else if (response.statusCode == 404) {
+      return [];
+    } else {
+      throw Exception('Failed to load list of questions for the test');
+    }
+  }
+
+
 }
