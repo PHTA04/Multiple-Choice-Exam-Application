@@ -1,5 +1,6 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:multiple_choice_exam/ui_student/home_sinhvien.dart';
 import 'package:multiple_choice_exam/ui_teacher/question_bank/question_bank.dart';
 import 'package:multiple_choice_exam/ui_teacher/question_bank/theme.dart';
 import 'package:multiple_choice_exam/ui_teacher/register_login/sign_in.dart';
@@ -30,7 +31,8 @@ class MyApp extends StatelessWidget {
       darkTheme: Themes.dark,
       themeMode: ThemeMode.light,
       // home: const QuestionBank(),
-      home: const SignIn(),
+      // home: const SignIn(),
+      home: const HomeSinhVien(),
     );
   }
 }
