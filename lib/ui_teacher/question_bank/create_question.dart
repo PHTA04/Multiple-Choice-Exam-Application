@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:io';
 import 'package:image_picker/image_picker.dart';
 import 'package:dropdown_button2/dropdown_button2.dart';
@@ -41,6 +42,7 @@ class _CreateQuestionState extends State<CreateQuestion> {
   TextEditingController dapAnDungController = TextEditingController();
   String? selectedDapAnDung;
   List<String> dapAnDungList = [];
+  Map<String, TextEditingController> dapAnDungMap = {};
 
   List<TextEditingController> danhSachControllers = []; // Danh sách các controller
   int soLuongDapAnDaThem = 2;
@@ -575,6 +577,15 @@ class _CreateQuestionState extends State<CreateQuestion> {
     );
   }
 
+  String toJson(Map<String, TextEditingController> dapAnDungMap) {
+    Map<String, dynamic> jsonMap = {};
+    dapAnDungMap.forEach((option, controller) {
+      String content = controller.text;
+      jsonMap['dapAn$option'] = content;
+    });
+    return jsonEncode(jsonMap);
+  }
+
   Future getImage() async {
     var image = await _picker.pickImage(source: ImageSource.gallery);
     selectedImage = File(image!.path);
@@ -652,43 +663,47 @@ class _CreateQuestionState extends State<CreateQuestion> {
   }
 
   Widget _buildAnswerOption(String option, TextEditingController controller) {
-    print("Controller name: ${controller.runtimeType}");
-    return Row(
-      children: [
-        Expanded(
-          child: TextField(
-            controller: controller,
-            decoration: InputDecoration(
-              labelText: "Đáp Án $option",
-              hintText: "Nhập đáp án $option",
-              labelStyle: TextStyle(color: Theme.of(context).hintColor),
-              hintStyle: const TextStyle(color: Colors.grey),
-              contentPadding:
-              const EdgeInsets.symmetric(vertical: 18, horizontal: 22),
-              enabledBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(16),
-                borderSide: const BorderSide(color: Colors.blue),
-              ),
-              focusedBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(16),
-                borderSide: const BorderSide(color: Colors.green),
+    return GestureDetector(
+      onTap: () {
+        setState(() {
+          // Xóa tất cả các đáp án đã được chọn trước đó khỏi dapAnDungMap
+          dapAnDungMap.clear();
+          // Thêm đáp án mới được chọn vào dapAnDungMap
+          dapAnDungMap[option] = controller;
+          // Cập nhật lại danh sách các đáp án đúng
+          selectedDapAnDung = toJson(dapAnDungMap);
+          print(selectedDapAnDung);
+        });
+      },
+      child: Row(
+        children: [
+          Expanded(
+            child: TextField(
+              controller: controller,
+              decoration: InputDecoration(
+                labelText: "Đáp Án $option",
+                hintText: "Nhập đáp án $option",
+                labelStyle: TextStyle(color: Theme.of(context).hintColor),
+                hintStyle: const TextStyle(color: Colors.grey),
+                contentPadding: const EdgeInsets.symmetric(vertical: 18, horizontal: 22),
+                enabledBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(16),
+                  borderSide: const BorderSide(color: Colors.blue),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(16),
+                  borderSide: const BorderSide(color: Colors.green),
+                ),
               ),
             ),
           ),
-        ),
-        const SizedBox(width: 10),
-        GestureDetector(
-          onTap: () {
-            setState(() {
-              selectedDapAnDung = option; // Cập nhật đáp án đúng được chọn
-            });
-          },
-          child: Container(
+          const SizedBox(width: 10),
+          Container(
             width: 40,
             height: 40,
             decoration: BoxDecoration(
               shape: BoxShape.circle,
-              color: selectedDapAnDung == option
+              color: dapAnDungMap.containsKey(option)
                   ? Colors.green
                   : Colors.red.withOpacity(0.7),
             ),
@@ -701,58 +716,60 @@ class _CreateQuestionState extends State<CreateQuestion> {
               ),
             ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 
   Widget _buildAnswerCheckBox(String option, TextEditingController controller) {
-    return Row(
-      children: [
-        Expanded(
-          child: TextField(
-            controller: controller,
-            decoration: InputDecoration(
-              labelText: "Đáp Án $option",
-              hintText: "Nhập đáp án $option",
-              labelStyle: TextStyle(color: Theme.of(context).hintColor),
-              hintStyle: const TextStyle(color: Colors.grey),
-              contentPadding: const EdgeInsets.symmetric(vertical: 18, horizontal: 22),
-              enabledBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(16),
-                borderSide: const BorderSide(color: Colors.blue),
-              ),
-              focusedBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(16),
-                borderSide: const BorderSide(color: Colors.green),
+    return GestureDetector(
+      onTap: () {
+        setState(() {
+          // Nếu đáp án đã được chọn, hãy loại bỏ nó khỏi danh sách
+          if (dapAnDungMap.containsKey(option)) {
+            dapAnDungMap.remove(option);
+          } else {
+            // Nếu đáp án chưa được chọn, hãy thêm nó vào danh sách
+            dapAnDungMap[option] = controller;
+          }
+          dapAnDungList.sort();
+          // Cập nhật lại danh sách các đáp án đúng
+          selectedDapAnDung = toJson(dapAnDungMap);
+          print(selectedDapAnDung);
+        });
+      },
+      child: Row(
+        children: [
+          Expanded(
+            child: TextField(
+              controller: controller,
+              decoration: InputDecoration(
+                labelText: "Đáp Án $option",
+                hintText: "Nhập đáp án $option",
+                labelStyle: TextStyle(color: Theme.of(context).hintColor),
+                hintStyle: const TextStyle(color: Colors.grey),
+                contentPadding: const EdgeInsets.symmetric(vertical: 18, horizontal: 22),
+                enabledBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(16),
+                  borderSide: const BorderSide(color: Colors.blue),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(16),
+                  borderSide: const BorderSide(color: Colors.green),
+                ),
               ),
             ),
           ),
-        ),
-        const SizedBox(width: 10),
-        GestureDetector(
-          onTap: () {
-            setState(() {
-              // Nếu đáp án đã được chọn, hãy loại bỏ nó khỏi danh sách
-              if (dapAnDungList.contains(option)) {
-                dapAnDungList.remove(option);
-              } else {
-                // Nếu đáp án chưa được chọn, hãy thêm nó vào danh sách
-                dapAnDungList.add(option);
-              }
-              // Cập nhật lại danh sách các đáp án đúng
-              selectedDapAnDung = dapAnDungList.isNotEmpty ? dapAnDungList.join(",") : null;
-            });
-          },
-          child: Container(
+          const SizedBox(width: 10),
+          Container(
             width: 40,
             height: 40,
             decoration: BoxDecoration(
               shape: BoxShape.rectangle,
               borderRadius: BorderRadius.circular(4),
-              color: dapAnDungList.contains(option) // Kiểm tra xem đáp án có được chọn không
-                  ? Colors.green // Nếu có, sử dụng màu xanh
-                  : Colors.red.withOpacity(0.7), // Nếu không, sử dụng màu đỏ
+              color: dapAnDungMap.containsKey(option)
+                  ? Colors.green
+                  : Colors.red.withOpacity(0.7),
             ),
             alignment: Alignment.center,
             child: Text(
@@ -763,8 +780,8 @@ class _CreateQuestionState extends State<CreateQuestion> {
               ),
             ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 
