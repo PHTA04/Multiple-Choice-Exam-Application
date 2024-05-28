@@ -15,7 +15,7 @@ class _TestScreenState extends State<TestScreen> {
   List<Map<String, dynamic>> cauHoiList = [];
   bool isLoading = true;
   int currentQuestionIndex = 0;
-  Map<int, String> answers = {};
+  Map<int, List<String>> answers = {};
 
   @override
   void initState() {
@@ -49,11 +49,11 @@ class _TestScreenState extends State<TestScreen> {
         context: context,
         builder: (BuildContext context) {
           return AlertDialog(
-            title: Text("Kết thúc bài thi"),
-            content: Text("Bạn đã hoàn thành bài thi."),
+            title: const Text("Kết thúc bài thi"),
+            content: const Text("Bạn đã hoàn thành bài thi."),
             actions: <Widget>[
               TextButton(
-                child: Text("OK"),
+                child: const Text("OK"),
                 onPressed: () {
                   Navigator.of(context).pop();
                 },
@@ -65,26 +65,40 @@ class _TestScreenState extends State<TestScreen> {
     }
   }
 
-  void chooseAnswer(String answer) {
+  void chooseAnswer(String answer, bool isMultipleChoice) {
     setState(() {
-      answers[currentQuestionIndex] = answer;
+      List<String> selectedAnswers = answers[currentQuestionIndex] ?? [];
+
+      if (isMultipleChoice) {
+        if (selectedAnswers.contains(answer)) {
+          selectedAnswers.remove(answer);
+        } else {
+          selectedAnswers.add(answer);
+        }
+      } else {
+        selectedAnswers = [answer];
+      }
+
+      answers[currentQuestionIndex] = selectedAnswers;
     });
   }
 
   @override
   Widget build(BuildContext context) {
+    bool isMultipleChoice = cauHoiList.isNotEmpty && cauHoiList[currentQuestionIndex]['loaiCauHoi'] == 'Câu Hỏi Nhiều Đáp Án Đúng';
+
     return Scaffold(
       appBar: AppBar(
         title: Text(
           'Câu hỏi ${currentQuestionIndex + 1}/${cauHoiList.length}',
-          style: TextStyle(
+          style: const TextStyle(
             fontWeight: FontWeight.bold,
             fontSize: 20,
           ),
         ),
         centerTitle: true,
         flexibleSpace: Container(
-          decoration: BoxDecoration(
+          decoration: const BoxDecoration(
             gradient: LinearGradient(
               colors: [Colors.blue, Colors.purple],
               begin: Alignment.topLeft,
@@ -94,7 +108,7 @@ class _TestScreenState extends State<TestScreen> {
         ),
         actions: [
           IconButton(
-            icon: Icon(Icons.help_outline),
+            icon: const Icon(Icons.help_outline),
             onPressed: () {
               // Handle help button press
             },
@@ -117,77 +131,103 @@ class _TestScreenState extends State<TestScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Container(
-              padding: EdgeInsets.all(15),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(15),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.grey.withOpacity(0.5),
-                    spreadRadius: 5,
-                    blurRadius: 7,
-                    offset: Offset(0, 3),
-                  ),
-                ],
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    cauHoiList[currentQuestionIndex]['ndCauHoi'],
-                    style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.black87,
-                    ),
-                  ),
-                  if (cauHoiList[currentQuestionIndex]['imageCauHoi'] != null)
-                    Padding(
-                      padding: const EdgeInsets.only(top: 10),
-                      child: Image.network(cauHoiList[currentQuestionIndex]['imageCauHoi']),
-                    ),
-                ],
-              ),
-            ),
-            SizedBox(height: 20),
-            Column(
-              children: [
-                for (String option in ['A', 'B', 'C', 'D'])
-                  GestureDetector(
-                    onTap: () => chooseAnswer(cauHoiList[currentQuestionIndex]['dapAn$option']),
-                    child: Container(
-                      width: double.infinity, // Đảm bảo đáp án có chiều rộng bằng nhau
-                      margin: EdgeInsets.only(bottom: 10),
-                      padding: EdgeInsets.all(15),
+            Expanded(
+              child: SingleChildScrollView(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.all(15),
                       decoration: BoxDecoration(
-                        color: answers[currentQuestionIndex] == cauHoiList[currentQuestionIndex]['dapAn$option']
-                            ? Colors.blueAccent
-                            : Colors.white,
+                        color: Colors.white,
                         borderRadius: BorderRadius.circular(15),
                         boxShadow: [
                           BoxShadow(
                             color: Colors.grey.withOpacity(0.5),
                             spreadRadius: 5,
                             blurRadius: 7,
-                            offset: Offset(0, 3),
+                            offset: const Offset(0, 3),
                           ),
                         ],
                       ),
-                      child: Text(
-                        cauHoiList[currentQuestionIndex]['dapAn$option'],
-                        style: TextStyle(
-                          fontSize: 16,
-                          color: answers[currentQuestionIndex] == cauHoiList[currentQuestionIndex]['dapAn$option']
-                              ? Colors.white
-                              : Colors.black87,
-                        ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          RichText(
+                            text: TextSpan(
+                              children: [
+                                TextSpan(
+                                  text: 'Câu hỏi: ${cauHoiList[currentQuestionIndex]['ndCauHoi']} ',
+                                  style: const TextStyle(
+                                    fontSize: 20,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.black87,
+                                  ),
+                                ),
+                                TextSpan(
+                                  text: isMultipleChoice
+                                      ? '(Chọn nhiều đáp án đúng)'
+                                      : '(Chỉ chọn 1 đáp án đúng)',
+                                  style: const TextStyle(
+                                    fontSize: 15,
+                                    fontStyle: FontStyle.italic,
+                                    fontWeight: FontWeight.normal,
+                                    color: Colors.red,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          if (cauHoiList[currentQuestionIndex]['imageCauHoi'] != null &&
+                              cauHoiList[currentQuestionIndex]['imageCauHoi'].isNotEmpty)
+                            Padding(
+                              padding: const EdgeInsets.only(top: 10),
+                              child: Image.network(cauHoiList[currentQuestionIndex]['imageCauHoi']),
+                            ),
+                        ],
                       ),
                     ),
-                  ),
-              ],
+                    const SizedBox(height: 20),
+                    Column(
+                      children: [
+                        for (String option in ['A', 'B', 'C', 'D'])
+                          GestureDetector(
+                            onTap: () => chooseAnswer(cauHoiList[currentQuestionIndex]['dapAn$option'], isMultipleChoice),
+                            child: Container(
+                              width: double.infinity,
+                              margin: const EdgeInsets.only(bottom: 10),
+                              padding: const EdgeInsets.all(15),
+                              decoration: BoxDecoration(
+                                color: (answers[currentQuestionIndex]?.contains(cauHoiList[currentQuestionIndex]['dapAn$option']) ?? false)
+                                    ? Colors.blueAccent
+                                    : Colors.white,
+                                borderRadius: BorderRadius.circular(15),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Colors.grey.withOpacity(0.5),
+                                    spreadRadius: 5,
+                                    blurRadius: 7,
+                                    offset: const Offset(0, 3),
+                                  ),
+                                ],
+                              ),
+                              child: Text(
+                                cauHoiList[currentQuestionIndex]['dapAn$option'],
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  color: (answers[currentQuestionIndex]?.contains(cauHoiList[currentQuestionIndex]['dapAn$option']) ?? false)
+                                      ? Colors.white
+                                      : Colors.black87,
+                                ),
+                              ),
+                            ),
+                          ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
             ),
-            Spacer(),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -198,7 +238,7 @@ class _TestScreenState extends State<TestScreen> {
                         currentQuestionIndex--;
                       });
                     },
-                    child: Text('Previous'),
+                    child: const Text('Previous'),
                   ),
                 ElevatedButton(
                   onPressed: nextQuestion,
