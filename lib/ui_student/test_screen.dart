@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'dart:async';
 import 'package:multiple_choice_exam/database/databaseService.dart';
+import 'package:circular_countdown_timer/circular_countdown_timer.dart';
 
 class TestScreen extends StatefulWidget {
   final int maBaiThi;
+  final int thoiGianLamBai;
 
-  const TestScreen({Key? key, required this.maBaiThi}) : super(key: key);
+  const TestScreen({Key? key, required this.maBaiThi, required this.thoiGianLamBai}) : super(key: key);
 
   @override
   _TestScreenState createState() => _TestScreenState();
@@ -17,9 +19,13 @@ class _TestScreenState extends State<TestScreen> {
   int currentQuestionIndex = 0;
   Map<int, List<String>> answers = {};
 
+  CountDownController _countDownController = CountDownController();
+  int remainingTime = 0; // giây
+
   @override
   void initState() {
     super.initState();
+    remainingTime = widget.thoiGianLamBai * 60;
     fetchCauHoiList();
   }
 
@@ -44,25 +50,29 @@ class _TestScreenState extends State<TestScreen> {
         currentQuestionIndex++;
       });
     } else {
-      // Handle end of the test
-      showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return AlertDialog(
-            title: const Text("Kết thúc bài thi"),
-            content: const Text("Bạn đã hoàn thành bài thi."),
-            actions: <Widget>[
-              TextButton(
-                child: const Text("OK"),
-                onPressed: () {
-                  Navigator.of(context).pop();
-                },
-              ),
-            ],
-          );
-        },
-      );
+      endTest();
     }
+  }
+
+  void endTest() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text("Kết thúc bài thi"),
+          content: const Text("Bạn đã hoàn thành bài thi."),
+          actions: <Widget>[
+            TextButton(
+              child: const Text("OK"),
+              onPressed: () {
+                Navigator.of(context).pop();
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
   }
 
   void chooseAnswer(String answer, bool isMultipleChoice) {
@@ -81,6 +91,11 @@ class _TestScreenState extends State<TestScreen> {
 
       answers[currentQuestionIndex] = selectedAnswers;
     });
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
   }
 
   @override
@@ -229,24 +244,61 @@ class _TestScreenState extends State<TestScreen> {
                 ),
               ),
             ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                if (currentQuestionIndex > 0)
-                  ElevatedButton(
-                    onPressed: () {
-                      setState(() {
-                        currentQuestionIndex--;
-                      });
-                    },
-                    child: const Text('Previous'),
+
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  if (currentQuestionIndex > 0)
+                    ElevatedButton(
+                      onPressed: () {
+                        setState(() {
+                          currentQuestionIndex--;
+                        });
+                      },
+                      style: ElevatedButton.styleFrom(
+                        minimumSize: Size(110, 45),
+                      ),
+                      child: const Text('Previous'),
+                    ),
+                  CircularCountDownTimer(
+                    duration: remainingTime,
+                    initialDuration: 0,
+                    controller: _countDownController,
+                    width: 50,
+                    height: 50,
+                    ringColor: Colors.grey[300]!,
+                    ringGradient: null,
+                    fillColor: Colors.blueAccent,
+                    fillGradient: null,
+                    backgroundColor: Colors.white,
+                    backgroundGradient: null,
+                    strokeWidth: 5.0,
+                    strokeCap: StrokeCap.round,
+                    textStyle: const TextStyle(
+                      fontSize: 15.0,
+                      color: Colors.black,
+                      fontWeight: FontWeight.bold,
+                    ),
+                    textFormat: CountdownTextFormat.MM_SS,
+                    isReverse: true,
+                    isReverseAnimation: true,
+                    isTimerTextShown: true,
+                    autoStart: true,
+                    onComplete: endTest,
                   ),
-                ElevatedButton(
-                  onPressed: nextQuestion,
-                  child: Text(currentQuestionIndex < cauHoiList.length - 1 ? 'Next' : 'Finish'),
-                ),
-              ],
+                  ElevatedButton(
+                    onPressed: nextQuestion,
+                    style: ElevatedButton.styleFrom(
+                      minimumSize: Size(110, 45),
+                    ),
+                    child: Text(currentQuestionIndex < cauHoiList.length - 1 ? 'Next' : 'Finish'),
+                  ),
+                ],
+              ),
             ),
+
           ],
         ),
       ),

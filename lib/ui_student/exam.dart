@@ -46,7 +46,7 @@ class _ExamState extends State<Exam> {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => TestScreen(maBaiThi: test['maBaiThi']),
+                      builder: (context) => TestScreen(maBaiThi: test['maBaiThi'], thoiGianLamBai: test['thoiGianLamBai']),
                     ),
                   );
                 },

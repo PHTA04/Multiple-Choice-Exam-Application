@@ -50,6 +50,8 @@ dependencies:
   intl: ^0.19.0
   firebase_auth: ^4.19.5
   flutter_spinkit: ^5.2.1
+  percent_indicator: ^4.2.3
+  circular_countdown_timer: ^0.2.3
 
 dev_dependencies:
   flutter_test:
