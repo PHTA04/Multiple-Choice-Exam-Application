@@ -75,8 +75,31 @@ class _TestScreenState extends State<TestScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Làm bài thi'),
+        title: Text(
+          'Câu hỏi ${currentQuestionIndex + 1}/${cauHoiList.length}',
+          style: TextStyle(
+            fontWeight: FontWeight.bold,
+            fontSize: 20,
+          ),
+        ),
         centerTitle: true,
+        flexibleSpace: Container(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              colors: [Colors.blue, Colors.purple],
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+            ),
+          ),
+        ),
+        actions: [
+          IconButton(
+            icon: Icon(Icons.help_outline),
+            onPressed: () {
+              // Handle help button press
+            },
+          ),
+        ],
       ),
       body: isLoading
           ? const Center(
@@ -94,28 +117,73 @@ class _TestScreenState extends State<TestScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              'Câu hỏi ${currentQuestionIndex + 1}/${cauHoiList.length}',
-              style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+            Container(
+              padding: EdgeInsets.all(15),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(15),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.grey.withOpacity(0.5),
+                    spreadRadius: 5,
+                    blurRadius: 7,
+                    offset: Offset(0, 3),
+                  ),
+                ],
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    cauHoiList[currentQuestionIndex]['ndCauHoi'],
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.black87,
+                    ),
+                  ),
+                  if (cauHoiList[currentQuestionIndex]['imageCauHoi'] != null)
+                    Padding(
+                      padding: const EdgeInsets.only(top: 10),
+                      child: Image.network(cauHoiList[currentQuestionIndex]['imageCauHoi']),
+                    ),
+                ],
+              ),
             ),
-            SizedBox(height: 20),
-            Text(
-              cauHoiList[currentQuestionIndex]['ndCauHoi'],
-              style: TextStyle(fontSize: 18),
-            ),
-            if (cauHoiList[currentQuestionIndex]['imageCauHoi'] != null)
-              Image.network(cauHoiList[currentQuestionIndex]['imageCauHoi']),
             SizedBox(height: 20),
             Column(
               children: [
                 for (String option in ['A', 'B', 'C', 'D'])
-                  RadioListTile<String>(
-                    title: Text(cauHoiList[currentQuestionIndex]['dapAn$option']),
-                    value: cauHoiList[currentQuestionIndex]['dapAn$option'],
-                    groupValue: answers[currentQuestionIndex],
-                    onChanged: (String? value) {
-                      chooseAnswer(value!);
-                    },
+                  GestureDetector(
+                    onTap: () => chooseAnswer(cauHoiList[currentQuestionIndex]['dapAn$option']),
+                    child: Container(
+                      width: double.infinity, // Đảm bảo đáp án có chiều rộng bằng nhau
+                      margin: EdgeInsets.only(bottom: 10),
+                      padding: EdgeInsets.all(15),
+                      decoration: BoxDecoration(
+                        color: answers[currentQuestionIndex] == cauHoiList[currentQuestionIndex]['dapAn$option']
+                            ? Colors.blueAccent
+                            : Colors.white,
+                        borderRadius: BorderRadius.circular(15),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.grey.withOpacity(0.5),
+                            spreadRadius: 5,
+                            blurRadius: 7,
+                            offset: Offset(0, 3),
+                          ),
+                        ],
+                      ),
+                      child: Text(
+                        cauHoiList[currentQuestionIndex]['dapAn$option'],
+                        style: TextStyle(
+                          fontSize: 16,
+                          color: answers[currentQuestionIndex] == cauHoiList[currentQuestionIndex]['dapAn$option']
+                              ? Colors.white
+                              : Colors.black87,
+                        ),
+                      ),
+                    ),
                   ),
               ],
             ),
