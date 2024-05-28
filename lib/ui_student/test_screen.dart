@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'dart:async';
 import 'package:multiple_choice_exam/database/databaseService.dart';
 import 'package:circular_countdown_timer/circular_countdown_timer.dart';
+import 'package:multiple_choice_exam/ui_student/score_screen.dart';
 
 class TestScreen extends StatefulWidget {
   final int maBaiThi;
@@ -18,6 +19,7 @@ class _TestScreenState extends State<TestScreen> {
   bool isLoading = true;
   int currentQuestionIndex = 0;
   Map<int, List<String>> answers = {};
+  List<List<String>> dapAnDungList = [];
 
   CountDownController _countDownController = CountDownController();
   int remainingTime = 0; // giây
@@ -29,11 +31,39 @@ class _TestScreenState extends State<TestScreen> {
     fetchCauHoiList();
   }
 
+  // Future<void> fetchCauHoiList() async {
+  //   try {
+  //     List<Map<String, dynamic>> fetchedCauHoiList = await DatabaseService.getDanhSachCauHoiDeThi(widget.maBaiThi);
+  //     setState(() {
+  //       cauHoiList = fetchedCauHoiList;
+  //       isLoading = false;
+  //     });
+  //   } catch (e) {
+  //     print('Lỗi khi lấy danh sách câu hỏi: $e');
+  //     setState(() {
+  //       isLoading = false;
+  //     });
+  //   }
+  // }
+
   Future<void> fetchCauHoiList() async {
     try {
       List<Map<String, dynamic>> fetchedCauHoiList = await DatabaseService.getDanhSachCauHoiDeThi(widget.maBaiThi);
       setState(() {
         cauHoiList = fetchedCauHoiList;
+
+        // Lưu trữ danh sách dapAnDung
+        dapAnDungList = fetchedCauHoiList.map<List<String>>((cauHoi) {
+          var dapAnDung = cauHoi['dapAnDung'];
+          if (dapAnDung is Map<String, dynamic>) {
+            return dapAnDung.values.cast<String>().toList();
+          } else if (dapAnDung is Iterable) {
+            return List<String>.from(dapAnDung);
+          } else {
+            return [];
+          }
+        }).toList();
+
         isLoading = false;
       });
     } catch (e) {
@@ -55,18 +85,58 @@ class _TestScreenState extends State<TestScreen> {
   }
 
   void endTest() {
+
+    // Tính toán điểm số
+    int totalQuestions = cauHoiList.length;
+    int correctAnswers = 0;
+
+    for (int i = 0; i < totalQuestions; i++) {
+      var dapAnDung = cauHoiList[i]['dapAnDung'];
+
+      // Debugging information
+      print('dapAnDung: ${dapAnDung.runtimeType}');
+      print('dapAnDung: ${dapAnDung}');
+
+      List<String> correctAnswersForQuestion;
+
+      // Handle different types of dapAnDung
+      if (dapAnDung is Map<String, dynamic>) {
+        correctAnswersForQuestion = dapAnDung.values.cast<String>().toList();
+      } else if (dapAnDung is Iterable) {
+        correctAnswersForQuestion = List<String>.from(dapAnDung);
+      } else {
+        // Handle unexpected types
+        correctAnswersForQuestion = [];
+        print('Unexpected type for dapAnDung');
+      }
+
+      List<String> userAnswersForQuestion = answers[i] ?? [];
+
+      if (correctAnswersForQuestion.length == userAnswersForQuestion.length &&
+          correctAnswersForQuestion.every((element) => userAnswersForQuestion.contains(element))) {
+        correctAnswers++;
+      }
+    }
+
+    int score = ((correctAnswers / totalQuestions) * 100).round();
+
+    // Hiển thị điểm số và điều hướng đến trang xem điểm
     showDialog(
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
           title: const Text("Kết thúc bài thi"),
-          content: const Text("Bạn đã hoàn thành bài thi."),
+          content: Text("Bạn đã hoàn thành bài thi với điểm số: $score%"),
           actions: <Widget>[
             TextButton(
-              child: const Text("OK"),
+              child: const Text("Xem kết quả"),
               onPressed: () {
                 Navigator.of(context).pop();
-                Navigator.of(context).pop();
+                Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (context) => ScoreScreen(score: score, cauHoiList: cauHoiList, answers: answers, dapAnDungList: dapAnDungList,),
+                  ),
+                );
               },
             ),
           ],
@@ -74,6 +144,8 @@ class _TestScreenState extends State<TestScreen> {
       },
     );
   }
+
+
 
   void chooseAnswer(String answer, bool isMultipleChoice) {
     setState(() {
