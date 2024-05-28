@@ -190,38 +190,39 @@ class _TestScreenState extends State<TestScreen> {
                     const SizedBox(height: 20),
                     Column(
                       children: [
-                        for (String option in ['A', 'B', 'C', 'D'])
-                          GestureDetector(
-                            onTap: () => chooseAnswer(cauHoiList[currentQuestionIndex]['dapAn$option'], isMultipleChoice),
-                            child: Container(
-                              width: double.infinity,
-                              margin: const EdgeInsets.only(bottom: 10),
-                              padding: const EdgeInsets.all(15),
-                              decoration: BoxDecoration(
-                                color: (answers[currentQuestionIndex]?.contains(cauHoiList[currentQuestionIndex]['dapAn$option']) ?? false)
-                                    ? Colors.blueAccent
-                                    : Colors.white,
-                                borderRadius: BorderRadius.circular(15),
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: Colors.grey.withOpacity(0.5),
-                                    spreadRadius: 5,
-                                    blurRadius: 7,
-                                    offset: const Offset(0, 3),
-                                  ),
-                                ],
-                              ),
-                              child: Text(
-                                cauHoiList[currentQuestionIndex]['dapAn$option'],
-                                style: TextStyle(
-                                  fontSize: 16,
+                        for (String option in ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H'])
+                          if (cauHoiList[currentQuestionIndex]['dapAn$option'] != null && cauHoiList[currentQuestionIndex]['dapAn$option'] != '')
+                            GestureDetector(
+                              onTap: () => chooseAnswer(cauHoiList[currentQuestionIndex]['dapAn$option'], isMultipleChoice),
+                              child: Container(
+                                width: double.infinity,
+                                margin: const EdgeInsets.only(bottom: 10),
+                                padding: const EdgeInsets.all(15),
+                                decoration: BoxDecoration(
                                   color: (answers[currentQuestionIndex]?.contains(cauHoiList[currentQuestionIndex]['dapAn$option']) ?? false)
-                                      ? Colors.white
-                                      : Colors.black87,
+                                      ? Colors.blueAccent
+                                      : Colors.white,
+                                  borderRadius: BorderRadius.circular(15),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: Colors.grey.withOpacity(0.5),
+                                      spreadRadius: 5,
+                                      blurRadius: 7,
+                                      offset: const Offset(0, 3),
+                                    ),
+                                  ],
+                                ),
+                                child: Text(
+                                  cauHoiList[currentQuestionIndex]['dapAn$option'],
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                    color: (answers[currentQuestionIndex]?.contains(cauHoiList[currentQuestionIndex]['dapAn$option']) ?? false)
+                                        ? Colors.white
+                                        : Colors.black87,
+                                  ),
                                 ),
                               ),
                             ),
-                          ),
                       ],
                     ),
                   ],
