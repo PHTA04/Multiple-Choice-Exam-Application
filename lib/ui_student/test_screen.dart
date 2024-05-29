@@ -8,7 +8,7 @@ class TestScreen extends StatefulWidget {
   final int maBaiThi;
   final int thoiGianLamBai;
 
-  const TestScreen({Key? key, required this.maBaiThi, required this.thoiGianLamBai}) : super(key: key);
+  const TestScreen({super.key, required this.maBaiThi, required this.thoiGianLamBai});
 
   @override
   _TestScreenState createState() => _TestScreenState();
@@ -21,7 +21,7 @@ class _TestScreenState extends State<TestScreen> {
   Map<int, List<String>> answers = {};
   List<List<String>> dapAnDungList = [];
 
-  CountDownController _countDownController = CountDownController();
+  final CountDownController _countDownController = CountDownController();
   int remainingTime = 0; // giây
 
   @override
@@ -30,21 +30,6 @@ class _TestScreenState extends State<TestScreen> {
     remainingTime = widget.thoiGianLamBai * 60;
     fetchCauHoiList();
   }
-
-  // Future<void> fetchCauHoiList() async {
-  //   try {
-  //     List<Map<String, dynamic>> fetchedCauHoiList = await DatabaseService.getDanhSachCauHoiDeThi(widget.maBaiThi);
-  //     setState(() {
-  //       cauHoiList = fetchedCauHoiList;
-  //       isLoading = false;
-  //     });
-  //   } catch (e) {
-  //     print('Lỗi khi lấy danh sách câu hỏi: $e');
-  //     setState(() {
-  //       isLoading = false;
-  //     });
-  //   }
-  // }
 
   Future<void> fetchCauHoiList() async {
     try {
@@ -85,7 +70,6 @@ class _TestScreenState extends State<TestScreen> {
   }
 
   void endTest() {
-
     // Tính toán điểm số
     int totalQuestions = cauHoiList.length;
     int correctAnswers = 0;
@@ -144,8 +128,6 @@ class _TestScreenState extends State<TestScreen> {
       },
     );
   }
-
-
 
   void chooseAnswer(String answer, bool isMultipleChoice) {
     setState(() {
