@@ -37,7 +37,6 @@ class _RegisterState extends State<Register> {
         'maSoSinhVien': maSoSinhVien,
         'tenDangNhap': tenDangNhap,
         'email': email,
-        'matKhau': matKhau,
       };
 
       try {

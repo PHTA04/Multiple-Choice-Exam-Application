@@ -31,8 +31,8 @@ class MyApp extends StatelessWidget {
       darkTheme: Themes.dark,
       themeMode: ThemeMode.light,
       // home: const QuestionBank(),
-      // home: const SignIn(),
-      home: const HomeSinhVien(),
+      home: const SignIn(),
+      // home: const HomeSinhVien(),
     );
   }
 }

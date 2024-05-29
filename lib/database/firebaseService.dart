@@ -119,4 +119,44 @@ class FirebaseService {
       return null;
     }
   }
+
+  Future<Map<String, dynamic>?> getStudentData(String uid) async {
+    try {
+      DocumentSnapshot doc = await _firestore.collection('SinhVien').doc(uid).get();
+      return doc.data() as Map<String, dynamic>?;
+    } catch (e) {
+      print('Error getting student data: $e');
+      return null;
+    }
+  }
+
+  Future<void> updateStudentData(String uid, Map<String, dynamic> updatedData) async {
+    try {
+      await _firestore.collection('SinhVien').doc(uid).update(updatedData);
+      print('Cập nhật thông tin sinh viên thành công.');
+    } catch (e) {
+      print('Error updating student data: $e');
+    }
+  }
+
+  Future<void> updatePassword(User user, String newPassword) async {
+    try {
+      await user.updatePassword(newPassword);
+      print('Cập nhật mật khẩu thành công.');
+    } catch (e) {
+      print('Error updating password: $e');
+    }
+  }
+
+  Future<bool> verifyCurrentPassword(String email, String password) async {
+    try {
+      AuthCredential credential = EmailAuthProvider.credential(email: email, password: password);
+      UserCredential userCredential = await _auth.currentUser!.reauthenticateWithCredential(credential);
+      return userCredential.user != null;
+    } catch (e) {
+      print('Error verifying current password: $e');
+      return false;
+    }
+  }
+
 }
