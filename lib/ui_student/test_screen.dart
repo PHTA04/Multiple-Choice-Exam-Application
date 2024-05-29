@@ -11,7 +11,7 @@ class TestScreen extends StatefulWidget {
   const TestScreen({super.key, required this.maBaiThi, required this.thoiGianLamBai});
 
   @override
-  _TestScreenState createState() => _TestScreenState();
+  State<TestScreen> createState() => _TestScreenState();
 }
 
 class _TestScreenState extends State<TestScreen> {
@@ -70,64 +70,107 @@ class _TestScreenState extends State<TestScreen> {
   }
 
   void endTest() {
-    // Tính toán điểm số
     int totalQuestions = cauHoiList.length;
-    int correctAnswers = 0;
+    double totalScore = 0.0;
+    double correctQuestionCount = 0.0;
+
+    int unansweredQuestions = 0; // Đếm số câu hỏi chưa được chọn đáp án
 
     for (int i = 0; i < totalQuestions; i++) {
       var dapAnDung = cauHoiList[i]['dapAnDung'];
-
-      // Debugging information
-      print('dapAnDung: ${dapAnDung.runtimeType}');
-      print('dapAnDung: ${dapAnDung}');
-
       List<String> correctAnswersForQuestion;
 
-      // Handle different types of dapAnDung
       if (dapAnDung is Map<String, dynamic>) {
         correctAnswersForQuestion = dapAnDung.values.cast<String>().toList();
       } else if (dapAnDung is Iterable) {
         correctAnswersForQuestion = List<String>.from(dapAnDung);
       } else {
-        // Handle unexpected types
         correctAnswersForQuestion = [];
         print('Unexpected type for dapAnDung');
       }
 
-      List<String> userAnswersForQuestion = answers[i] ?? [];
+      List<String>? userAnswersForQuestion = answers[i];
 
-      if (correctAnswersForQuestion.length == userAnswersForQuestion.length &&
-          correctAnswersForQuestion.every((element) => userAnswersForQuestion.contains(element))) {
-        correctAnswers++;
+      if (userAnswersForQuestion == null || userAnswersForQuestion.isEmpty) {
+        unansweredQuestions++; // Tăng số câu hỏi chưa được chọn đáp án
+      } else {
+        int numCorrectAnswers = correctAnswersForQuestion.length;
+        int numUserCorrectAnswers = userAnswersForQuestion
+            .where((answer) => correctAnswersForQuestion.contains(answer))
+            .length;
+
+        if (numCorrectAnswers > 0) {
+          double scoreForQuestion = numUserCorrectAnswers / numCorrectAnswers;
+          totalScore += scoreForQuestion;
+
+          if (scoreForQuestion == 1.0) {
+            correctQuestionCount += 1.0;
+          } else {
+            correctQuestionCount += scoreForQuestion;
+          }
+        }
       }
     }
 
-    int score = ((correctAnswers / totalQuestions) * 100).round();
-
-    // Hiển thị điểm số và điều hướng đến trang xem điểm
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: const Text("Kết thúc bài thi"),
-          content: Text("Bạn đã hoàn thành bài thi với điểm số: $score%"),
-          actions: <Widget>[
-            TextButton(
-              child: const Text("Xem kết quả"),
-              onPressed: () {
-                Navigator.of(context).pop();
-                Navigator.of(context).push(
-                  MaterialPageRoute(
-                    builder: (context) => ScoreScreen(score: score, cauHoiList: cauHoiList, answers: answers, dapAnDungList: dapAnDungList,),
-                  ),
-                );
-              },
+    if (unansweredQuestions > 0) {
+      // Hiển thị thông báo nếu có câu hỏi chưa được chọn đáp án
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: const Text("Có câu hỏi chưa được chọn đáp án"),
+            content: const Text(
+              "Vui lòng chọn đáp án cho tất cả các câu hỏi trước khi kết thúc bài thi.",
             ),
-          ],
-        );
-      },
-    );
+            actions: <Widget>[
+              TextButton(
+                child: const Text("OK"),
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+              ),
+            ],
+          );
+        },
+      );
+    } else {
+      // Tính điểm và hiển thị kết quả nếu tất cả các câu hỏi đã được trả lời
+      double finalScore = (totalScore / totalQuestions) * 10; // Đổi thành thang điểm 10
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: const Text("Kết thúc bài thi"),
+            content: Text(
+              "Bạn đã hoàn thành bài thi với ${correctQuestionCount.toStringAsFixed(2)}/$totalQuestions câu đúng.\n"
+                  "Điểm của bạn là ${finalScore.toStringAsFixed(2)}/10 điểm.",
+            ),
+            actions: <Widget>[
+              TextButton(
+                child: const Text("Xem kết quả"),
+                onPressed: () {
+                  Navigator.of(context).pop();
+                  Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (context) => ScoreScreen(
+                        score: finalScore,
+                        correctQuestionCount: correctQuestionCount,
+                        totalQuestions: totalQuestions,
+                        cauHoiList: cauHoiList,
+                        answers: answers,
+                        dapAnDungList: dapAnDungList,
+                      ),
+                    ),
+                  );
+                },
+              ),
+            ],
+          );
+        },
+      );
+    }
   }
+
 
   void chooseAnswer(String answer, bool isMultipleChoice) {
     setState(() {
@@ -158,6 +201,7 @@ class _TestScreenState extends State<TestScreen> {
 
     return Scaffold(
       appBar: AppBar(
+        automaticallyImplyLeading: false,
         title: Text(
           'Câu hỏi ${currentQuestionIndex + 1}/${cauHoiList.length}',
           style: const TextStyle(
@@ -312,9 +356,9 @@ class _TestScreenState extends State<TestScreen> {
                         });
                       },
                       style: ElevatedButton.styleFrom(
-                        minimumSize: Size(110, 45),
+                        minimumSize: const Size(110, 45),
                       ),
-                      child: const Text('Previous'),
+                      child: const Text('Quay lại'),
                     ),
                   CircularCountDownTimer(
                     duration: remainingTime,
@@ -345,9 +389,9 @@ class _TestScreenState extends State<TestScreen> {
                   ElevatedButton(
                     onPressed: nextQuestion,
                     style: ElevatedButton.styleFrom(
-                      minimumSize: Size(110, 45),
+                      minimumSize: const Size(110, 45),
                     ),
-                    child: Text(currentQuestionIndex < cauHoiList.length - 1 ? 'Next' : 'Finish'),
+                    child: Text(currentQuestionIndex < cauHoiList.length - 1 ? 'Tiếp theo' : 'Nộp bài'),
                   ),
                 ],
               ),
