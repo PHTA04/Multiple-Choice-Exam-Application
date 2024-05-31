@@ -1,3 +1,5 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'dart:async';
 import 'package:multiple_choice_exam/database/databaseService.dart';
@@ -69,12 +71,281 @@ class _TestScreenState extends State<TestScreen> {
     }
   }
 
-  void endTest() {
+  // void endTest() {
+  //   int totalQuestions = cauHoiList.length;
+  //   double totalScore = 0.0;
+  //   double correctQuestionCount = 0.0;
+  //
+  //   int unansweredQuestions = 0; // Đếm số câu hỏi chưa được chọn đáp án
+  //
+  //   for (int i = 0; i < totalQuestions; i++) {
+  //     var dapAnDung = cauHoiList[i]['dapAnDung'];
+  //     List<String> correctAnswersForQuestion;
+  //
+  //     if (dapAnDung is Map<String, dynamic>) {
+  //       correctAnswersForQuestion = dapAnDung.values.cast<String>().toList();
+  //     } else if (dapAnDung is Iterable) {
+  //       correctAnswersForQuestion = List<String>.from(dapAnDung);
+  //     } else {
+  //       correctAnswersForQuestion = [];
+  //       print('Unexpected type for dapAnDung');
+  //     }
+  //
+  //     List<String>? userAnswersForQuestion = answers[i];
+  //
+  //     if (userAnswersForQuestion == null || userAnswersForQuestion.isEmpty) {
+  //       unansweredQuestions++; // Tăng số câu hỏi chưa được chọn đáp án
+  //     } else {
+  //       int numCorrectAnswers = correctAnswersForQuestion.length;
+  //       int numUserCorrectAnswers = userAnswersForQuestion
+  //           .where((answer) => correctAnswersForQuestion.contains(answer))
+  //           .length;
+  //
+  //       if (numCorrectAnswers > 0) {
+  //         double scoreForQuestion = numUserCorrectAnswers / numCorrectAnswers;
+  //         totalScore += scoreForQuestion;
+  //
+  //         if (scoreForQuestion == 1.0) {
+  //           correctQuestionCount += 1.0;
+  //         } else {
+  //           correctQuestionCount += scoreForQuestion;
+  //         }
+  //       }
+  //     }
+  //     print('danhSachCauHoi: $cauHoiList');
+  //     print('danhSachDapAnDung: $dapAnDungList');
+  //     print('danhSachDapAnSinhVienChon: $answers');
+  //   }
+  //
+  //   if (unansweredQuestions > 0) {
+  //     // Hiển thị thông báo nếu có câu hỏi chưa được chọn đáp án
+  //     showDialog(
+  //       context: context,
+  //       builder: (BuildContext context) {
+  //         return AlertDialog(
+  //           title: const Text("Có câu hỏi chưa được chọn đáp án"),
+  //           content: const Text(
+  //             "Vui lòng chọn đáp án cho tất cả các câu hỏi trước khi kết thúc bài thi.",
+  //           ),
+  //           actions: <Widget>[
+  //             TextButton(
+  //               child: const Text("OK"),
+  //               onPressed: () {
+  //                 Navigator.of(context).pop();
+  //               },
+  //             ),
+  //           ],
+  //         );
+  //       },
+  //     );
+  //   } else {
+  //     // Tính điểm và hiển thị kết quả nếu tất cả các câu hỏi đã được trả lời
+  //     double finalScore = (totalScore / totalQuestions) * 10; // Đổi thành thang điểm 10
+  //     showDialog(
+  //       context: context,
+  //       builder: (BuildContext context) {
+  //         return AlertDialog(
+  //           title: const Text("Kết thúc bài thi"),
+  //           content: Text(
+  //             "Bạn đã hoàn thành bài thi với ${correctQuestionCount.toStringAsFixed(2)}/$totalQuestions câu đúng.\n"
+  //                 "Điểm của bạn là ${finalScore.toStringAsFixed(2)}/10 điểm.",
+  //           ),
+  //           actions: <Widget>[
+  //             TextButton(
+  //               child: const Text("Xem kết quả"),
+  //               onPressed: () {
+  //                 Navigator.of(context).pop();
+  //                 Navigator.of(context).push(
+  //                   MaterialPageRoute(
+  //                     builder: (context) => ScoreScreen(
+  //                       score: finalScore,
+  //                       correctQuestionCount: correctQuestionCount,
+  //                       totalQuestions: totalQuestions,
+  //                       cauHoiList: cauHoiList,
+  //                       answers: answers,
+  //                       dapAnDungList: dapAnDungList,
+  //                     ),
+  //                   ),
+  //                 );
+  //               },
+  //             ),
+  //           ],
+  //         );
+  //       },
+  //     );
+  //   }
+  // }
+
+
+
+  // void endTest() async {
+  //   int totalQuestions = cauHoiList.length;
+  //   double totalScore = 0.0;
+  //   double correctQuestionCount = 0.0;
+  //
+  //   int unansweredQuestions = 0;
+  //
+  //   for (int i = 0; i < totalQuestions; i++) {
+  //     var dapAnDung = cauHoiList[i]['dapAnDung'];
+  //     List<String> correctAnswersForQuestion;
+  //
+  //     if (dapAnDung is Map<String, dynamic>) {
+  //       correctAnswersForQuestion = dapAnDung.values.cast<String>().toList();
+  //     } else if (dapAnDung is Iterable) {
+  //       correctAnswersForQuestion = List<String>.from(dapAnDung);
+  //     } else {
+  //       correctAnswersForQuestion = [];
+  //     }
+  //
+  //     List<String>? userAnswersForQuestion = answers[i];
+  //
+  //     if (userAnswersForQuestion == null || userAnswersForQuestion.isEmpty) {
+  //       unansweredQuestions++;
+  //     } else {
+  //       int numCorrectAnswers = correctAnswersForQuestion.length;
+  //       int numUserCorrectAnswers = userAnswersForQuestion
+  //           .where((answer) => correctAnswersForQuestion.contains(answer))
+  //           .length;
+  //
+  //       if (numCorrectAnswers > 0) {
+  //         double scoreForQuestion = numUserCorrectAnswers / numCorrectAnswers;
+  //         totalScore += scoreForQuestion;
+  //
+  //         if (scoreForQuestion == 1.0) {
+  //           correctQuestionCount += 1.0;
+  //         } else {
+  //           correctQuestionCount += scoreForQuestion;
+  //         }
+  //       }
+  //     }
+  //   }
+  //
+  //   if (unansweredQuestions > 0) {
+  //     showDialog(
+  //       context: context,
+  //       builder: (BuildContext context) {
+  //         return AlertDialog(
+  //           title: const Text("Có câu hỏi chưa được chọn đáp án"),
+  //           content: const Text(
+  //             "Vui lòng chọn đáp án cho tất cả các câu hỏi trước khi kết thúc bài thi.",
+  //           ),
+  //           actions: <Widget>[
+  //             TextButton(
+  //               child: const Text("OK"),
+  //               onPressed: () {
+  //                 Navigator.of(context).pop();
+  //               },
+  //             ),
+  //           ],
+  //         );
+  //       },
+  //     );
+  //   } else {
+  //     double finalScore = (totalScore / totalQuestions) * 10;
+  //     DateTime now = DateTime.now();
+  //     String ngayLamBai = now.toIso8601String().split('T')[0];
+  //     String gioLamBai = now.toIso8601String().split('T')[1].split('.')[0];
+  //
+  //     try {
+  //       String maDiem = await DatabaseService.insertDiem(
+  //         widget.maBaiThi,
+  //         "maSoSinhVien", // Replace with the actual student ID
+  //         correctQuestionCount,
+  //         totalQuestions - correctQuestionCount,
+  //         widget.thoiGianLamBai * 60 - remainingTime,
+  //         ngayLamBai,
+  //         gioLamBai,
+  //         1, // Replace with the actual number of attempts
+  //       );
+  //
+  //       await DatabaseService.insertXemLaiBaiThi(
+  //         cauHoiList.map((cauHoi) => {
+  //           'ndCauHoi': cauHoi['ndCauHoi'],
+  //           'dapAnA': cauHoi['dapAnA'],
+  //           'dapAnB': cauHoi['dapAnB'],
+  //           'dapAnC': cauHoi['dapAnC'],
+  //           'dapAnD': cauHoi['dapAnD'],
+  //           'dapAnE': cauHoi['dapAnE'],
+  //           'dapAnF': cauHoi['dapAnF'],
+  //           'dapAnG': cauHoi['dapAnG'],
+  //           'dapAnH': cauHoi['dapAnH'],
+  //         }).toList(),
+  //         dapAnDungList.map((dapAnDung) => {
+  //           'dapAnDung': dapAnDung,
+  //         }).toList(),
+  //         answers.map((index, dapAnSinhVienChon) => MapEntry(
+  //           index.toString(),
+  //           {
+  //             'dapAnSinhVienChon': dapAnSinhVienChon,
+  //           },
+  //         )).values.toList(),
+  //         int.parse(maDiem),
+  //       );
+  //
+  //       showDialog(
+  //         context: context,
+  //         builder: (BuildContext context) {
+  //           return AlertDialog(
+  //             title: const Text("Kết thúc bài thi"),
+  //             content: Text(
+  //               "Bạn đã hoàn thành bài thi với ${correctQuestionCount.toStringAsFixed(2)}/$totalQuestions câu đúng.\n"
+  //                   "Điểm của bạn là ${finalScore.toStringAsFixed(2)}/10 điểm.",
+  //             ),
+  //             actions: <Widget>[
+  //               TextButton(
+  //                 child: const Text("Xem kết quả"),
+  //                 onPressed: () {
+  //                   Navigator.of(context).pop();
+  //                   Navigator.of(context).push(
+  //                     MaterialPageRoute(
+  //                       builder: (context) => ScoreScreen(
+  //                         score: finalScore,
+  //                         correctQuestionCount: correctQuestionCount,
+  //                         totalQuestions: totalQuestions,
+  //                         cauHoiList: cauHoiList,
+  //                         answers: answers,
+  //                         dapAnDungList: dapAnDungList,
+  //                       ),
+  //                     ),
+  //                   );
+  //                 },
+  //               ),
+  //             ],
+  //           );
+  //         },
+  //       );
+  //     } catch (e) {
+  //       print('Lỗi khi chèn điểm hoặc xem lại bài thi: $e');
+  //       showDialog(
+  //         context: context,
+  //         builder: (BuildContext context) {
+  //           return AlertDialog(
+  //             title: const Text("Lỗi"),
+  //             content: const Text("Có lỗi xảy ra trong quá trình chèn điểm hoặc xem lại bài thi."),
+  //             actions: <Widget>[
+  //               TextButton(
+  //                 child: const Text("OK"),
+  //                 onPressed: () {
+  //                   Navigator.of(context).pop();
+  //                 },
+  //               ),
+  //             ],
+  //           );
+  //         },
+  //       );
+  //     }
+  //   }
+  // }
+
+
+
+
+  void endTest() async {
     int totalQuestions = cauHoiList.length;
     double totalScore = 0.0;
     double correctQuestionCount = 0.0;
 
-    int unansweredQuestions = 0; // Đếm số câu hỏi chưa được chọn đáp án
+    int unansweredQuestions = 0;
 
     for (int i = 0; i < totalQuestions; i++) {
       var dapAnDung = cauHoiList[i]['dapAnDung'];
@@ -86,13 +357,12 @@ class _TestScreenState extends State<TestScreen> {
         correctAnswersForQuestion = List<String>.from(dapAnDung);
       } else {
         correctAnswersForQuestion = [];
-        print('Unexpected type for dapAnDung');
       }
 
       List<String>? userAnswersForQuestion = answers[i];
 
       if (userAnswersForQuestion == null || userAnswersForQuestion.isEmpty) {
-        unansweredQuestions++; // Tăng số câu hỏi chưa được chọn đáp án
+        unansweredQuestions++;
       } else {
         int numCorrectAnswers = correctAnswersForQuestion.length;
         int numUserCorrectAnswers = userAnswersForQuestion
@@ -113,7 +383,6 @@ class _TestScreenState extends State<TestScreen> {
     }
 
     if (unansweredQuestions > 0) {
-      // Hiển thị thông báo nếu có câu hỏi chưa được chọn đáp án
       showDialog(
         context: context,
         builder: (BuildContext context) {
@@ -134,42 +403,125 @@ class _TestScreenState extends State<TestScreen> {
         },
       );
     } else {
-      // Tính điểm và hiển thị kết quả nếu tất cả các câu hỏi đã được trả lời
-      double finalScore = (totalScore / totalQuestions) * 10; // Đổi thành thang điểm 10
-      showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return AlertDialog(
-            title: const Text("Kết thúc bài thi"),
-            content: Text(
-              "Bạn đã hoàn thành bài thi với ${correctQuestionCount.toStringAsFixed(2)}/$totalQuestions câu đúng.\n"
-                  "Điểm của bạn là ${finalScore.toStringAsFixed(2)}/10 điểm.",
-            ),
-            actions: <Widget>[
-              TextButton(
-                child: const Text("Xem kết quả"),
-                onPressed: () {
-                  Navigator.of(context).pop();
-                  Navigator.of(context).push(
-                    MaterialPageRoute(
-                      builder: (context) => ScoreScreen(
-                        score: finalScore,
-                        correctQuestionCount: correctQuestionCount,
-                        totalQuestions: totalQuestions,
-                        cauHoiList: cauHoiList,
-                        answers: answers,
-                        dapAnDungList: dapAnDungList,
-                      ),
-                    ),
-                  );
+      double finalScore = (totalScore / totalQuestions) * 10;
+      DateTime now = DateTime.now();
+      String ngayLamBai = now.toIso8601String().split('T')[0];
+      String gioLamBai = now.toIso8601String().split('T')[1].split('.')[0];
+
+      try {
+        User? user = FirebaseAuth.instance.currentUser;
+        if (user != null) {
+          DocumentSnapshot studentSnapshot = await FirebaseFirestore.instance
+              .collection('SinhVien')
+              .doc(user.uid)
+              .get();
+
+          if (studentSnapshot.exists) {
+            Map<String, dynamic> studentData = studentSnapshot.data() as Map<String, dynamic>;
+            String maSoSinhVien = studentData['maSoSinhVien'];
+
+            String maDiem = await DatabaseService.insertDiem(
+              widget.maBaiThi,
+              maSoSinhVien, // Sử dụng maSoSinhVien từ studentData
+              correctQuestionCount,
+              totalQuestions - correctQuestionCount,
+              widget.thoiGianLamBai * 60 - remainingTime,
+              ngayLamBai,
+              gioLamBai,
+              1, // Replace with the actual number of attempts
+            );
+
+            await DatabaseService.insertXemLaiBaiThi(
+              cauHoiList.map((cauHoi) => {
+                'ndCauHoi': cauHoi['ndCauHoi'],
+                'dapAnA': cauHoi['dapAnA'],
+                'dapAnB': cauHoi['dapAnB'],
+                'dapAnC': cauHoi['dapAnC'],
+                'dapAnD': cauHoi['dapAnD'],
+                'dapAnE': cauHoi['dapAnE'],
+                'dapAnF': cauHoi['dapAnF'],
+                'dapAnG': cauHoi['dapAnG'],
+                'dapAnH': cauHoi['dapAnH'],
+              }).toList(),
+              dapAnDungList.map((dapAnDung) => {
+                'dapAnDung': dapAnDung,
+              }).toList(),
+              answers.map((index, dapAnSinhVienChon) => MapEntry(
+                index.toString(),
+                {
+                  'dapAnSinhVienChon': dapAnSinhVienChon,
                 },
-              ),
-            ],
-          );
-        },
-      );
+              )).values.toList(),
+              int.parse(maDiem),
+            );
+
+            showDialog(
+              context: context,
+              barrierDismissible: false,
+              builder: (BuildContext context) {
+                return AlertDialog(
+                  title: const Text("Kết thúc bài thi"),
+                  content: Text(
+                    "Bạn đã hoàn thành bài thi với ${correctQuestionCount.toStringAsFixed(2)}/$totalQuestions câu đúng.\n"
+                        "Điểm của bạn là ${finalScore.toStringAsFixed(2)}/10 điểm.",
+                  ),
+                  actions: <Widget>[
+                    TextButton(
+                      child: const Text("Xem kết quả"),
+                      onPressed: () {
+                        Navigator.of(context).pop();
+                        Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (context) => ScoreScreen(
+                              score: finalScore,
+                              correctQuestionCount: correctQuestionCount,
+                              totalQuestions: totalQuestions,
+                              cauHoiList: cauHoiList,
+                              answers: answers,
+                              dapAnDungList: dapAnDungList,
+                            ),
+                          ),
+                        );
+                      },
+                    ),
+                  ],
+                );
+              },
+            );
+          } else {
+            print('Không tìm thấy thông tin sinh viên.');
+          }
+        } else {
+          print('Người dùng không tồn tại.');
+        }
+      } catch (e) {
+        print('Lỗi khi chèn điểm hoặc xem lại bài thi: $e');
+        showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return AlertDialog(
+              title: const Text("Lỗi"),
+              content: const Text("Có lỗi xảy ra trong quá trình chèn điểm hoặc xem lại bài thi."),
+              actions: <Widget>[
+                TextButton(
+                  child: const Text("OK"),
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                ),
+              ],
+            );
+          },
+        );
+      }
     }
   }
+
+
+
+
+
+
 
 
   void chooseAnswer(String answer, bool isMultipleChoice) {
