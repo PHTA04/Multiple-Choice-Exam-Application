@@ -2,7 +2,7 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 
 class DatabaseService {
-  static const String ipName = '192.168.1.8';
+  static const String ipName = '10.106.23.192';
   static const String port = '2612';
   static const String baseUrl = 'http://$ipName:$port';
 
@@ -406,38 +406,6 @@ class DatabaseService {
       throw Exception('Failed to load list of questions for the test');
     }
   }
-
-  // static Future<String> insertDiem(
-  //     int maBaiThi,
-  //     String maSoSinhVien,
-  //     double soCauDung,
-  //     double soCauSai,
-  //     int thoiGianHoanThanhBaiThi,
-  //     String ngayLamBai,
-  //     String gioLamBai,
-  //     int soLanLamBai) async {
-  //   final response = await http.post(
-  //     Uri.parse('$baseUrl/insertDiem'),
-  //     headers: <String, String>{
-  //       'Content-Type': 'application/json; charset=UTF-8',
-  //     },
-  //     body: jsonEncode(<String, dynamic>{
-  //       'maBaiThi': maBaiThi,
-  //       'maSoSinhVien': maSoSinhVien,
-  //       'soCauDung': soCauDung,
-  //       'soCauSai': soCauSai,
-  //       'thoiGianHoanThanhBaiThi': thoiGianHoanThanhBaiThi,
-  //       'ngayLamBai': ngayLamBai,
-  //       'gioLamBai': gioLamBai,
-  //       'soLanLamBai': soLanLamBai,
-  //     }),
-  //   );
-  //   if (response.statusCode == 200) {
-  //     return response.body;
-  //   } else {
-  //     throw Exception('Failed to insert score');
-  //   }
-  // }
 
   static Future<String> insertDiem(
       int maBaiThi,
