@@ -264,6 +264,28 @@ class DatabaseService {
     }
   }
 
+  static Future<List<Map<String, dynamic>>> getDanhSachCauHoi(String tenChuDe) async {
+    final response = await http.post(
+      Uri.parse('$baseUrl/getDanhSachCauHoi'),
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+      },
+      body: jsonEncode(<String, String>{
+        'tenChuDe': tenChuDe,
+      }),
+    );
+
+    if (response.statusCode == 200) {
+      Iterable decodedBody = jsonDecode(response.body);
+      List<Map<String, dynamic>> cauHoiList = List<Map<String, dynamic>>.from(decodedBody);
+      return cauHoiList;
+    } else if (response.statusCode == 404) {
+      return [];
+    } else {
+      throw Exception('Failed to load list of questions for the topic');
+    }
+  }
+
   static Future<String> insertExam(String tenDeThi, String tenMonHoc) async {
     final response = await http.post(
       Uri.parse('$baseUrl/insertExam'),
