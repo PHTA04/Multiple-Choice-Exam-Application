@@ -21,18 +21,28 @@ class _ViewExamState extends State<ViewExam> {
 
   _appBar() {
     return AppBar(
-      backgroundColor: Colors.white,
       elevation: 10,
+      centerTitle: true,
       title: const Text(
         "Xem Đề Thi",
         style: TextStyle(
           fontSize: 20,
           fontWeight: FontWeight.bold,
-          color: Colors.black,
+          color: Colors.white,
         ),
         textAlign: TextAlign.center,
         overflow: TextOverflow.ellipsis, // Xử lý văn bản dài
       ),
+      flexibleSpace: Container(
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            colors: [Colors.blue, Colors.purple],
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+          ),
+        ),
+      ),
+      iconTheme: const IconThemeData(color: Colors.white),
     );
   }
 }
