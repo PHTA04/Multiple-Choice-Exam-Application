@@ -2,7 +2,7 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 
 class DatabaseService {
-  static const String ipName = '192.168.1.6';
+  static const String ipName = '192.168.1.5';
   static const String port = '2612';
   static const String baseUrl = 'http://$ipName:$port';
 
@@ -406,6 +406,28 @@ class DatabaseService {
       throw Exception('Failed to load list of tests');
     }
   }
+
+    static Future<List<Map<String, dynamic>>> getTestByExam(String tenDeThi) async {
+      final response = await http.post(
+        Uri.parse('$baseUrl/getTestByExam'),
+        headers: <String, String>{
+          'Content-Type': 'application/json; charset=UTF-8',
+        },
+        body: jsonEncode(<String, String>{
+          'tenDeThi': tenDeThi,
+        }),
+      );
+
+      if (response.statusCode == 200) {
+        Iterable decodedBody = jsonDecode(response.body);
+        List<Map<String, dynamic>> testList = List<Map<String, dynamic>>.from(decodedBody);
+        return testList;
+      } else if (response.statusCode == 404) {
+        return [];
+      } else {
+        throw Exception('Failed to load list of tests for the exam');
+      }
+    }
 
   static Future<List<Map<String, dynamic>>> getDanhSachCauHoiDeThi(int maBaiThi) async {
     final response = await http.post(
