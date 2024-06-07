@@ -287,6 +287,10 @@ class _ViewExamState extends State<ViewExam> {
 
   Future<void> _generateAndSavePdf() async {
     final pdf = pw.Document();
+    final font = await rootBundle.load("assets/fonts/NotoSans-Regular.ttf");
+    final ttf = pw.Font.ttf(font);
+    final fontBold = await rootBundle.load("assets/fonts/NotoSans-Bold.ttf");
+    final ttfBold = pw.Font.ttf(fontBold);
 
     for (var question in cauHoiList) {
       List<String> correctAnswers = convertDapAnDung(question['dapAnDung']);
@@ -305,7 +309,7 @@ class _ViewExamState extends State<ViewExam> {
               children: [
                 pw.Text(
                   'Câu hỏi: ${question['ndCauHoi']} (${question['loaiCauHoi']})',
-                  style: pw.TextStyle(fontSize: 20, fontWeight: pw.FontWeight.bold),
+                  style: pw.TextStyle(fontSize: 20, fontWeight: pw.FontWeight.bold, font: ttfBold),
                 ),
                 pw.SizedBox(height: 10),
                 if (imageBytes != null)
@@ -326,6 +330,7 @@ class _ViewExamState extends State<ViewExam> {
                         style: pw.TextStyle(
                           fontSize: 16,
                           color: correctAnswers.contains(question['dapAn$option']) ? PdfColors.white : PdfColors.black,
+                          font: ttf,
                         ),
                       ),
                     );
@@ -335,7 +340,7 @@ class _ViewExamState extends State<ViewExam> {
                 pw.SizedBox(height: 10),
                 pw.Text(
                   'Đáp án đúng: ${correctAnswers.join(', ')}',
-                  style: const pw.TextStyle(fontSize: 16, color: PdfColors.green),
+                  style: pw.TextStyle(fontSize: 16, color: PdfColors.green, font: ttf),
                 ),
               ],
             );
