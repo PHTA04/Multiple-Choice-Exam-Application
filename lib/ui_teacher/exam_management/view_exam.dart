@@ -1,8 +1,15 @@
+import 'dart:io';
+
 import 'package:dropdown_button2/dropdown_button2.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:multiple_choice_exam/database/databaseService.dart';
 import 'package:multiple_choice_exam/ui_teacher/exam_management/create_exam.dart';
-import 'package:multiple_choice_exam/ui_teacher/question_bank/create_topic.dart';
+import 'package:open_file/open_file.dart';
+import 'package:pdf/pdf.dart';
+import 'package:pdf/widgets.dart' as pw;
+import 'package:path_provider/path_provider.dart';
 
 class ViewExam extends StatefulWidget {
   const ViewExam({super.key});
@@ -165,6 +172,13 @@ class _ViewExamState extends State<ViewExam> {
               const SizedBox(height: 20),
 
               ...cauHoiList.map((question) => buildQuestionCard(question)),
+
+              const SizedBox(height: 20),
+              ElevatedButton(
+                onPressed: _generateAndSavePdf,
+                child: const Text('Xuất PDF'),
+              ),
+
             ],
           ),
         ),
@@ -269,6 +283,87 @@ class _ViewExamState extends State<ViewExam> {
         ),
       ),
     );
+  }
+
+  Future<void> _generateAndSavePdf() async {
+    final pdf = pw.Document();
+
+    for (var question in cauHoiList) {
+      List<String> correctAnswers = convertDapAnDung(question['dapAnDung']);
+      List<String> options = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H'];
+
+      Uint8List? imageBytes;
+      if (question['imageCauHoi'] != null && question['imageCauHoi'].isNotEmpty) {
+        imageBytes = await _loadNetworkImage(question['imageCauHoi']);
+      }
+
+      pdf.addPage(
+        pw.Page(
+          build: (pw.Context context) {
+            return pw.Column(
+              crossAxisAlignment: pw.CrossAxisAlignment.start,
+              children: [
+                pw.Text(
+                  'Câu hỏi: ${question['ndCauHoi']} (${question['loaiCauHoi']})',
+                  style: pw.TextStyle(fontSize: 20, fontWeight: pw.FontWeight.bold),
+                ),
+                pw.SizedBox(height: 10),
+                if (imageBytes != null)
+                  pw.Image(pw.MemoryImage(imageBytes)),
+                pw.SizedBox(height: 10),
+                ...options.map((option) {
+                  if (question['dapAn$option'] != null && question['dapAn$option'].isNotEmpty) {
+                    return pw.Container(
+                      margin: const pw.EdgeInsets.only(bottom: 10),
+                      padding: const pw.EdgeInsets.all(10),
+                      decoration: pw.BoxDecoration(
+                        color: correctAnswers.contains(question['dapAn$option']) ? PdfColors.greenAccent : PdfColors.white,
+                        borderRadius: pw.BorderRadius.circular(10),
+                        border: pw.Border.all(color: PdfColors.black, width: 0.5),
+                      ),
+                      child: pw.Text(
+                        question['dapAn$option'],
+                        style: pw.TextStyle(
+                          fontSize: 16,
+                          color: correctAnswers.contains(question['dapAn$option']) ? PdfColors.white : PdfColors.black,
+                        ),
+                      ),
+                    );
+                  }
+                  return pw.SizedBox.shrink();
+                }).toList(),
+                pw.SizedBox(height: 10),
+                pw.Text(
+                  'Đáp án đúng: ${correctAnswers.join(', ')}',
+                  style: const pw.TextStyle(fontSize: 16, color: PdfColors.green),
+                ),
+              ],
+            );
+          },
+        ),
+      );
+    }
+
+    final output = await getExternalStorageDirectory();
+    final file = File('${output!.path}/exam.pdf');
+    await file.writeAsBytes(await pdf.save());
+
+    final filePath = file.path; // Save the file path
+    print(filePath);
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text('Đã lưu file PDF thành công tại $filePath'),
+      ),
+    );
+
+    OpenFile.open(filePath);
+  }
+
+  Future<Uint8List> _loadNetworkImage(String url) async {
+    final response = await HttpClient().getUrl(Uri.parse(url));
+    final bytes = await consolidateHttpClientResponseBytes(await response.close());
+    return bytes;
   }
 
   _appBar() {
