@@ -4,6 +4,7 @@ import 'package:multiple_choice_exam/database/firebaseService.dart';
 import 'package:multiple_choice_exam/ui_teacher/question_bank/question_bank.dart';
 import 'package:multiple_choice_exam/ui_teacher/register_login/register.dart';
 import 'package:multiple_choice_exam/ui_student/home_sinhvien.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class SignIn extends StatefulWidget {
   const SignIn({super.key});
@@ -59,12 +60,38 @@ class _SignInState extends State<SignIn> {
     return Scaffold(
       appBar: null,
       body: Container(
-        color: Colors.white10,
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            colors: [Colors.blueAccent, Colors.cyanAccent],
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+          ),
+        ),
         padding: const EdgeInsets.all(20.0),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
+            Column(
+              children: [
+                const Icon(
+                  Icons.school_outlined,
+                  size: 100,
+                  color: Colors.white,
+                ),
+                Text(
+                  'Xin Chào!',
+                  style: GoogleFonts.lobster(
+                    textStyle: const TextStyle(
+                      fontSize: 32,
+                      color: Colors.white,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 20.0),
+
             Container(
               decoration: BoxDecoration(
                 color: Colors.white,
@@ -116,7 +143,16 @@ class _SignInState extends State<SignIn> {
 
                     ElevatedButton(
                       onPressed: _signIn,
-                      child: const Text('Đăng Nhập'),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.green,
+                      ),
+                      child: const Text(
+                          'Đăng Nhập',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 16
+                        ),
+                      ),
                     ),
                     const SizedBox(height: 10.0),
 
@@ -167,7 +203,16 @@ class _SignInState extends State<SignIn> {
                               MaterialPageRoute(builder: (context) => const Register()),
                             );
                           },
-                          child: const Text('Tạo Tài Khoản Mới'),
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: const Color(0xff01A0C7),
+                          ),
+                          child: const Text(
+                              'Tạo Tài Khoản Mới',
+                            style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 16
+                            ),
+                          ),
                         ),
                       ],
                     ),
