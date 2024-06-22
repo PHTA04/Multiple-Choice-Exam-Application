@@ -1,5 +1,4 @@
 import 'dart:io';
-
 import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -175,7 +174,7 @@ class _ViewExamState extends State<ViewExam> {
 
               const SizedBox(height: 20),
               ElevatedButton(
-                onPressed: _generateAndSavePdf,
+                onPressed: () => _generateAndSavePdf(selectedDeThi),
                 child: const Text('Xuất PDF'),
               ),
 
@@ -285,7 +284,7 @@ class _ViewExamState extends State<ViewExam> {
     );
   }
 
-  Future<void> _generateAndSavePdf() async {
+  Future<void> _generateAndSavePdf(String tenDeThi) async {
     final pdf = pw.Document();
     final font = await rootBundle.load("assets/fonts/NotoSans-Regular.ttf");
     final ttf = pw.Font.ttf(font);
@@ -350,7 +349,7 @@ class _ViewExamState extends State<ViewExam> {
     }
 
     final output = await getExternalStorageDirectory();
-    final file = File('${output!.path}/exam.pdf');
+    final file = File('${output!.path}/$tenDeThi.pdf'); // Use the exam name for the filename
     await file.writeAsBytes(await pdf.save());
 
     final filePath = file.path; // Save the file path

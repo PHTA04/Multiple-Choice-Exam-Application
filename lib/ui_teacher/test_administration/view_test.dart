@@ -166,12 +166,12 @@ class _ViewTestState extends State<ViewTest> {
               ),
               const SizedBox(height: 20),
 
-              baiThiList.isNotEmpty
+              baiThiList != null
                   ? GridView.builder(
                 shrinkWrap: true,
                 gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                   crossAxisCount: 1,
-                  childAspectRatio: 3/1.6,
+                  childAspectRatio: 3/1.7,
                 ),
                 itemCount: baiThiList.length,
                 itemBuilder: (context, index) {

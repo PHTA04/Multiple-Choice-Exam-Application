@@ -52,32 +52,39 @@ class _ViewTopicState extends State<ViewTopic> {
                   final tenChuDe = chuDeList[index]['tenChuDe'];
                   return Card(
                     elevation: 2,
-                    child: ListTile(
-                      contentPadding: const EdgeInsets.all(7.0),
-                      title: Padding(
-                        padding: const EdgeInsets.only(bottom: 2.0), // Khoảng cách giữa title và subtitle
-                        child: Text(
-                          tenChuDe,
-                          style: const TextStyle(
-                            fontWeight: FontWeight.bold,
+                      shadowColor: Colors.black54,
+                    child: Container(
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(15),
+                        color: Colors.white,
+                      ),
+                      child: ListTile(
+                        contentPadding: const EdgeInsets.all(7.0),
+                        title: Padding(
+                          padding: const EdgeInsets.only(bottom: 2.0), // Khoảng cách giữa title và subtitle
+                          child: Text(
+                            tenChuDe,
+                            style: const TextStyle(
+                              fontWeight: FontWeight.bold,
+                            ),
                           ),
                         ),
+                        subtitle: Text(tenMonHoc),
+                        trailing: const Icon(
+                          Icons.arrow_forward_ios,
+                          size: 16,
+                        ),
+                        onTap: () {
+                          setState(() {
+                            selectMaChuDe = maChuDe;
+                            selectedTenChuDe = tenChuDe;
+                            selectedTenMonHoc = tenMonHoc;
+                          });
+                          showMessage('Chỉnh Sửa Chủ Đề');
+                          showEditDialog();
+                        },
                       ),
-                      subtitle: Text(tenMonHoc),
-                      trailing: const Icon(
-                        Icons.arrow_forward_ios,
-                        size: 16,
-                      ),
-                      onTap: () {
-                        setState(() {
-                          selectMaChuDe = maChuDe;
-                          selectedTenChuDe = tenChuDe;
-                          selectedTenMonHoc = tenMonHoc;
-                        });
-                        showMessage('Chỉnh Sửa Chủ Đề');
-                        showEditDialog();
-                      },
-                    ),
+                    )
                   );
                 },
               ),
@@ -255,15 +262,29 @@ class _ViewTopicState extends State<ViewTopic> {
   }
 
   void showMessage(String message) {
-    Fluttertoast.showToast(
-      msg: message,
-      toastLength: Toast.LENGTH_SHORT,
-      gravity: ToastGravity.BOTTOM,
-      timeInSecForIosWeb: 1,
-      backgroundColor: Colors.black87,
-      textColor: Colors.white,
-      fontSize: 16.0,
+    final snackBar = SnackBar(
+      content: Text(
+        message,
+        style: const TextStyle(
+          color: Colors.white,
+          fontSize: 16.0,
+          fontWeight: FontWeight.bold,
+        ),
+      ),
+      backgroundColor: Colors.teal,
+      behavior: SnackBarBehavior.floating,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(10),
+      ),
+      duration: const Duration(seconds: 2),
+      action: SnackBarAction(
+        label: 'OK',
+        textColor: Colors.white,
+        onPressed: () {},
+      ),
     );
+
+    ScaffoldMessenger.of(context).showSnackBar(snackBar);
   }
 
   void closeEditDialog() {
