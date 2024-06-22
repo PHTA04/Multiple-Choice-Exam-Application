@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:multiple_choice_exam/ui_student/home_sinhvien.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 import 'package:multiple_choice_exam/ui_student/review_screen.dart';
 
@@ -48,6 +49,22 @@ class ScoreScreen extends StatelessWidget {
             ),
           ),
         ),
+        actions: [
+          IconButton(
+            icon: const Icon(
+                Icons.home,
+              size: 32,
+              color: Colors.white70,
+            ),
+            onPressed: () {
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (context) => const HomeSinhVien(),
+                ),
+              );
+            },
+          ),
+        ],
       ),
       body: Padding(
         padding: const EdgeInsets.all(20.0),
