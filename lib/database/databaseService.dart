@@ -2,7 +2,7 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 
 class DatabaseService {
-  static const String ipName = '10.106.23.30';
+  static const String ipName = '192.168.1.3';
   static const String port = '2612';
   static const String baseUrl = 'http://$ipName:$port';
 
