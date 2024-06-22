@@ -24,7 +24,6 @@ class _QuestionBankState extends State<QuestionBank> {
     const QuestionBankPage(),
     const ExamManagement(),
     const TestAdministration(),
-    const ScoreManagement(),
   ];
 
   void _onItemTapped(int index) {
@@ -98,10 +97,6 @@ class _QuestionBankState extends State<QuestionBank> {
           icon: _buildIcon(Icons.assignment_outlined, 2),
           label: 'Quản Lý Bài Thi',
         ),
-        BottomNavigationBarItem(
-          icon: _buildIcon(Icons.score_outlined, 3),
-          label: 'Quản Lý Điểm',
-        ),
       ],
       currentIndex: _selectedIndex,
       selectedItemColor: Colors.blueAccent,
@@ -152,8 +147,6 @@ class _QuestionBankState extends State<QuestionBank> {
         return "Quản Lý Đề Thi";
       case 2:
         return "Quản Lý Bài Thi";
-      case 3:
-        return "Quản Lý Điểm";
       default:
         return "Ngân Hàng Câu Hỏi";
     }

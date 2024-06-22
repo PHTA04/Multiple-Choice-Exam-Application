@@ -124,7 +124,7 @@ class _ViewTopicState extends State<ViewTopic> {
       barrierDismissible: false,
       builder: (_) => AlertDialog(
         title: const Text(
-          'Chỉnh sửa môn học',
+          'Chỉnh sửa chủ đề',
           textAlign: TextAlign.center,
           style: TextStyle(
             fontSize: 18,

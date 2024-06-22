@@ -1,6 +1,7 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:multiple_choice_exam/ui_student/exam.dart';
-import 'package:multiple_choice_exam/ui_student/exam_result.dart';
 import 'package:multiple_choice_exam/ui_student/student_information.dart';
 import 'package:multiple_choice_exam/ui_teacher/register_login/sign_in.dart';
 
@@ -14,18 +15,36 @@ class HomeSinhVien extends StatefulWidget {
 class _HomeSinhVienState extends State<HomeSinhVien> {
 
   int _selectedIndex = 0;
+  User? _currentUser;
+  String _username = 'Loading...';
 
   final List<Widget> _pages = [
     const Exam(),
     const StudentInformation(),
-    const ExamResult(),
   ];
 
   final List<String> _titles = [
     'Làm bài thi',
     'Thông tin của sinh viên',
-    'Xem kết quả',
   ];
+
+  @override
+  void initState() {
+    super.initState();
+    _currentUser = FirebaseAuth.instance.currentUser;
+    if (_currentUser != null) {
+      _loadUserData();
+    }
+  }
+
+  Future<void> _loadUserData() async {
+    if (_currentUser != null) {
+      DocumentSnapshot userDoc = await FirebaseFirestore.instance.collection('SinhVien').doc(_currentUser!.uid).get();
+      setState(() {
+        _username = userDoc['tenDangNhap'] ?? 'User';
+      });
+    }
+  }
 
   void _onItemTapped(int index) {
     setState(() {
@@ -73,36 +92,56 @@ class _HomeSinhVienState extends State<HomeSinhVien> {
         child: ListView(
           padding: EdgeInsets.zero,
           children: <Widget>[
-            const DrawerHeader(
-              decoration: BoxDecoration(
-                color: Colors.blue,
-              ),
-              child: Text(
-                'Menu',
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 24,
+            DrawerHeader(
+              decoration: const BoxDecoration(
+                gradient: LinearGradient(
+                  colors: [Colors.blue, Colors.purple],
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
                 ),
+              ),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const CircleAvatar(
+                    radius: 30,
+                    backgroundImage: AssetImage('assets/images/user.png'),
+                  ),
+                  const SizedBox(height: 10),
+                  Text(
+                    'Xin chào, $_username!',
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ],
               ),
             ),
             ListTile(
-              leading: const Icon(Icons.edit),
+              leading: const Icon(
+                  Icons.edit,
+                color: Colors.cyan,
+              ),
               title: const Text('Làm bài thi'),
               onTap: () => _onItemTapped(0),
             ),
             ListTile(
-              leading: const Icon(Icons.info),
+              leading: const Icon(
+                  Icons.info,
+                color: Colors.cyan,
+              ),
               title: const Text('Thông tin'),
               onTap: () => _onItemTapped(1),
             ),
-            ListTile(
-              leading: const Icon(Icons.assessment),
-              title: const Text('Xem kết quả'),
-              onTap: () => _onItemTapped(2),
-            ),
             const Divider(),
             ListTile(
-              leading: const Icon(Icons.exit_to_app),
+              leading: const Icon(
+                  Icons.exit_to_app,
+                color: Colors.red,
+              ),
               title: const Text('Đăng xuất'),
               onTap: _logout,
             ),

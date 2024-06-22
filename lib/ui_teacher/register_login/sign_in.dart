@@ -164,21 +164,6 @@ class _SignInState extends State<SignIn> {
                             Column(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
-                                GestureDetector(
-                                  onTap: () {
-                                    Navigator.push(
-                                      context,
-                                      MaterialPageRoute(builder: (context) => const QuestionBank()),
-                                    );
-                                  },
-                                  child: const Text(
-                                    'Quên Mật Khẩu?',
-                                    style: TextStyle(
-                                      color: Colors.blue,
-                                    ),
-                                  ),
-                                ),
-                                const SizedBox(height: 10),
                                 const Row(
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
