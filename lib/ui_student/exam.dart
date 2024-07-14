@@ -72,21 +72,7 @@ class _ExamState extends State<Exam> {
 
                     print(soLanLamBai);
                     if (soLanLamBai >= test['soLanLamBai']) {
-                      showDialog(
-                        context: context,
-                        builder: (context) => AlertDialog(
-                          title: Text('Thông báo'),
-                          content: Text('Bạn đã thực hiện quá số lần làm bài.'),
-                          actions: <Widget>[
-                            TextButton(
-                              onPressed: () {
-                                Navigator.of(context).pop();
-                              },
-                              child: Text('OK'),
-                            ),
-                          ],
-                        ),
-                      );
+                      _showErrorDialog("Lỗi", "Bạn đã thực hiện quá số lần làm bài.");
                     } else {
                       Navigator.push(
                         context,
@@ -101,21 +87,7 @@ class _ExamState extends State<Exam> {
                       );
                     }
                   } else {
-                    showDialog(
-                      context: context,
-                      builder: (context) => AlertDialog(
-                        title: Text('Lỗi'),
-                        content: Text('Không thể lấy thông tin sinh viên.'),
-                        actions: <Widget>[
-                          TextButton(
-                            onPressed: () {
-                              Navigator.of(context).pop();
-                            },
-                            child: Text('OK'),
-                          ),
-                        ],
-                      ),
-                    );
+                    _showErrorDialog("Lỗi", "Không thể lấy thông tin sinh viên.");
                   }
                 },
                 child: const Text('Bắt đầu'),
@@ -131,19 +103,23 @@ class _ExamState extends State<Exam> {
     try {
       List<Map<String, dynamic>> tests = await DatabaseService.getTest();
       DateTime now = DateTime.now();
+      print(now);
 
       List<Map<String, dynamic>> filteredTests = tests.where((test) {
-        DateTime ngayBatDau = DateTime.parse(test['ngayBatDau']);
-        DateTime ngayKetThuc = DateTime.parse(test['ngayKetThuc']);
+        DateTime ngayBatDau = DateTime.parse(test['ngayBatDau']).toLocal();
+        DateTime ngayKetThuc = DateTime.parse(test['ngayKetThuc']).toLocal();
+        print('$ngayBatDau - $ngayKetThuc');
         TimeOfDay gioBatDau = TimeOfDay(
             hour: int.parse(test['gioBatDau'].split(':')[0]),
             minute: int.parse(test['gioBatDau'].split(':')[1]));
         TimeOfDay gioKetThuc = TimeOfDay(
             hour: int.parse(test['gioKetThuc'].split(':')[0]),
             minute: int.parse(test['gioKetThuc'].split(':')[1]));
+        print('$gioBatDau - $gioKetThuc');
 
         DateTime startTime = DateTime(ngayBatDau.year, ngayBatDau.month, ngayBatDau.day, gioBatDau.hour, gioBatDau.minute);
         DateTime endTime = DateTime(ngayKetThuc.year, ngayKetThuc.month, ngayKetThuc.day, gioKetThuc.hour, gioKetThuc.minute);
+        print('$startTime - $endTime');
 
         return now.isAfter(startTime) && now.isBefore(endTime);
       }).toList();
@@ -159,4 +135,54 @@ class _ExamState extends State<Exam> {
       });
     }
   }
+
+  void _showErrorDialog(String title, String message) {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) => Dialog(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(10),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.all(20.0),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Icon(
+                Icons.error_outline,
+                color: Colors.red,
+                size: 48,
+              ),
+              const SizedBox(height: 16),
+              Text(
+                title,
+                style: const TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              const SizedBox(height: 10),
+              Text(
+                message,
+                style: const TextStyle(fontSize: 14.5),
+              ),
+              const SizedBox(height: 20),
+              ElevatedButton(
+                onPressed: () => Navigator.pop(context),
+                style: ElevatedButton.styleFrom(
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  padding: const EdgeInsets.symmetric(vertical: 15),
+                ),
+                child: const Text("Đóng"),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
 }
