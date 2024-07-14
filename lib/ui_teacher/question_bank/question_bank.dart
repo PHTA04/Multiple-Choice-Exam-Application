@@ -7,7 +7,6 @@ import 'package:multiple_choice_exam/ui_teacher/question_bank/view_question.dart
 import 'package:multiple_choice_exam/ui_teacher/question_bank/view_subject.dart';
 import 'package:multiple_choice_exam/ui_teacher/question_bank/view_topic.dart';
 import 'package:multiple_choice_exam/ui_teacher/register_login/sign_in.dart';
-import 'package:multiple_choice_exam/ui_teacher/score_management/score_management.dart';
 import 'package:multiple_choice_exam/ui_teacher/test_administration/test_administration.dart';
 
 class QuestionBank extends StatefulWidget {

@@ -31,66 +31,6 @@ class _StudentInformationState extends State<StudentInformation> {
     _loadStudentInformation();
   }
 
-  void _loadStudentInformation() async {
-    User? user = FirebaseAuth.instance.currentUser;
-    if (user != null) {
-      Map<String, dynamic>? studentData = await _firebaseService.getStudentData(user.uid);
-      if (studentData != null) {
-        setState(() {
-          hoTenSinhVienController.text = studentData['hoTen'] ?? '';
-          maSoSinhVienController.text = studentData['maSoSinhVien'] ?? '';
-          tenDangNhapController.text = studentData['tenDangNhap'] ?? '';
-          emailController.text = studentData['email'] ?? '';
-        });
-      }
-    }
-  }
-
-  void _updateStudentInformation() async {
-    User? user = FirebaseAuth.instance.currentUser;
-    if (user != null) {
-      final matKhauHienTai = matKhauHienTaiController.text;
-      final matKhauMoi = matKhauMoiController.text;
-      final nhaplaiMatKhauMoi = nhaplaiMatKhauMoiController.text;
-
-      // Kiểm tra mật khẩu hiện tại
-      if (await _firebaseService.verifyCurrentPassword(user.email!, matKhauHienTai)) {
-        final updatedData = {
-          'hoTen': hoTenSinhVienController.text,
-          'email': emailController.text,
-        };
-        await _firebaseService.updateStudentData(user.uid, updatedData);
-
-        // Cập nhật mật khẩu nếu có
-        if (matKhauMoi.isNotEmpty && nhaplaiMatKhauMoi.isNotEmpty) {
-          if (matKhauMoi == nhaplaiMatKhauMoi) {
-            await _firebaseService.updatePassword(user, matKhauMoi);
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text('Cập nhật thông tin và mật khẩu thành công!')),
-            );
-          } else {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text('Mật khẩu mới không khớp!')),
-            );
-          }
-        } else {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Cập nhật thông tin thành công!')),
-          );
-        }
-        // Reload lại trang sau khi cập nhật
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(builder: (context) => const HomeSinhVien()),
-        );
-      } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Mật khẩu hiện tại không chính xác!')),
-        );
-      }
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -240,5 +180,85 @@ class _StudentInformationState extends State<StudentInformation> {
         ),
       ),
     );
+  }
+
+  void _loadStudentInformation() async {
+    User? user = FirebaseAuth.instance.currentUser;
+    if (user != null) {
+      Map<String, dynamic>? studentData = await _firebaseService.getStudentData(user.uid);
+      if (studentData != null) {
+        setState(() {
+          hoTenSinhVienController.text = studentData['hoTen'] ?? '';
+          maSoSinhVienController.text = studentData['maSoSinhVien'] ?? '';
+          tenDangNhapController.text = studentData['tenDangNhap'] ?? '';
+          emailController.text = studentData['email'] ?? '';
+        });
+      }
+    }
+  }
+
+  void _updateStudentInformation() async {
+    User? user = FirebaseAuth.instance.currentUser;
+    if (user != null) {
+      final matKhauHienTai = matKhauHienTaiController.text;
+      final matKhauMoi = matKhauMoiController.text;
+      final nhaplaiMatKhauMoi = nhaplaiMatKhauMoiController.text;
+
+      // Kiểm tra mật khẩu hiện tại
+      if (await _firebaseService.verifyCurrentPassword(user.email!, matKhauHienTai)) {
+        final updatedData = {
+          'hoTen': hoTenSinhVienController.text,
+          'email': emailController.text,
+        };
+        await _firebaseService.updateStudentData(user.uid, updatedData);
+
+        // Cập nhật mật khẩu nếu có
+        if (matKhauMoi.isNotEmpty && nhaplaiMatKhauMoi.isNotEmpty) {
+          if (matKhauMoi.length < 6 || nhaplaiMatKhauMoi.length < 6) {
+            showMessage('Mật khẩu mới và nhập lại mật khẩu phải có ít nhất 6 ký tự!');
+          } else if (matKhauMoi == nhaplaiMatKhauMoi) {
+            await _firebaseService.updatePassword(user, matKhauMoi);
+            showMessage('Cập nhật thông tin và mật khẩu thành công!');
+          } else if(matKhauMoi != nhaplaiMatKhauMoi){
+            showMessage('Mật khẩu mới không khớp!');
+          }
+        } else {
+          showMessage('Cập nhật thông tin thành công!');
+        }
+
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => const HomeSinhVien()),
+        );
+      } else {
+        showMessage('Mật khẩu hiện tại không chính xác!');
+      }
+    }
+  }
+
+  void showMessage(String message) {
+    final snackBar = SnackBar(
+      content: Text(
+        message,
+        style: const TextStyle(
+          color: Colors.white,
+          fontSize: 16.0,
+          fontWeight: FontWeight.bold,
+        ),
+      ),
+      backgroundColor: Colors.teal,
+      behavior: SnackBarBehavior.floating,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(10),
+      ),
+      duration: const Duration(seconds: 2),
+      action: SnackBarAction(
+        label: 'OK',
+        textColor: Colors.white,
+        onPressed: () {},
+      ),
+    );
+
+    ScaffoldMessenger.of(context).showSnackBar(snackBar);
   }
 }
