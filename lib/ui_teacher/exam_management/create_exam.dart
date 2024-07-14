@@ -7,8 +7,8 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:multiple_choice_exam/database/databaseService.dart';
 import 'package:multiple_choice_exam/database/firebaseService.dart';
-import 'package:multiple_choice_exam/ui_teacher/exam_management/exam_management.dart';
 import 'package:multiple_choice_exam/ui_teacher/question_bank/create_topic.dart';
+import 'package:multiple_choice_exam/ui_teacher/question_bank/question_bank.dart';
 
 class CreateExam extends StatefulWidget {
   const CreateExam({super.key});
@@ -1152,8 +1152,7 @@ class _CreateExamState extends State<CreateExam> {
           ),
           ElevatedButton(
             onPressed: () {
-              // Navigator.pop(context, false); // Trả về giá trị false khi chọn "Không"
-              Navigator.push(context, MaterialPageRoute(builder: (context) => const ExamManagement()));
+              Navigator.push(context, MaterialPageRoute(builder: (context) => const QuestionBank()));
             },
             style: ElevatedButton.styleFrom(
               shape: RoundedRectangleBorder(

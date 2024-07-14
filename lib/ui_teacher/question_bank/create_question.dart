@@ -905,7 +905,6 @@ class _CreateQuestionState extends State<CreateQuestion> {
           ),
           ElevatedButton(
             onPressed: () {
-              // Navigator.pop(context, false); // Trả về giá trị false khi chọn "Không"
               Navigator.push(context, MaterialPageRoute(builder: (context) => const QuestionBank()));
             },
             style: ElevatedButton.styleFrom(
