@@ -214,6 +214,14 @@ class _CreateQuestionState extends State<CreateQuestion> {
                           selectedLoaiCauHoi = selected!;
                           soLuongDapAnDaThem = 2;
                           danhSachControllers.clear();
+
+                          if (selectedLoaiCauHoi == 'Câu Hỏi Đúng Sai') {
+                            dapAnAController.text = 'Đúng';
+                            dapAnBController.text = 'Sai';
+                          } else {
+                            dapAnAController.clear();
+                            dapAnBController.clear();
+                          }
                         });
                       },
                       items: loaiCauHoiList.map((String loaiCauHoi) {
