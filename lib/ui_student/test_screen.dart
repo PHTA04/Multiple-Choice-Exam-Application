@@ -9,8 +9,10 @@ import 'package:multiple_choice_exam/ui_student/score_screen.dart';
 class TestScreen extends StatefulWidget {
   final int maBaiThi;
   final int thoiGianLamBai;
+  final int soLanLamBai;
+  final int choPhepXemLai;
 
-  const TestScreen({super.key, required this.maBaiThi, required this.thoiGianLamBai});
+  const TestScreen({super.key, required this.maBaiThi, required this.thoiGianLamBai, required this.soLanLamBai, required this.choPhepXemLai});
 
   @override
   State<TestScreen> createState() => _TestScreenState();
@@ -158,13 +160,13 @@ class _TestScreenState extends State<TestScreen> {
 
             String maDiem = await DatabaseService.insertDiem(
               widget.maBaiThi,
-              maSoSinhVien, // Sử dụng maSoSinhVien từ studentData
+              maSoSinhVien,
               correctQuestionCount,
               totalQuestions - correctQuestionCount,
               thoiGianHoanThanhBaiThi,
               ngayLamBai,
               gioLamBai,
-              1, // Replace with the actual number of attempts
+              widget.soLanLamBai + 1,
             );
 
             await DatabaseService.insertXemLaiBaiThi(
@@ -215,6 +217,7 @@ class _TestScreenState extends State<TestScreen> {
                               cauHoiList: cauHoiList,
                               answers: answers,
                               dapAnDungList: dapAnDungList,
+                                choPhepXemLai: widget.choPhepXemLai,
                             ),
                           ),
                         );

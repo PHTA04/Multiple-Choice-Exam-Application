@@ -11,6 +11,7 @@ class ScoreScreen extends StatelessWidget {
   final List<Map<String, dynamic>> cauHoiList;
   final Map<int, List<String>> answers;
   final List<List<String>> dapAnDungList;
+  final int choPhepXemLai;
 
   const ScoreScreen({
     super.key,
@@ -20,6 +21,7 @@ class ScoreScreen extends StatelessWidget {
     required this.cauHoiList,
     required this.answers,
     required this.dapAnDungList,
+    required this.choPhepXemLai,
   });
 
   @override
@@ -97,23 +99,24 @@ class ScoreScreen extends StatelessWidget {
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 20),
-            ElevatedButton(
-              onPressed: () {
-                Navigator.of(context).push(
-                  MaterialPageRoute(
-                    builder: (context) => ReviewScreen(
-                      cauHoiList: cauHoiList,
-                      answers: answers,
-                      dapAnDungList: dapAnDungList,
+            if(choPhepXemLai == 1)
+              ElevatedButton(
+                onPressed: () {
+                  Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (context) => ReviewScreen(
+                        cauHoiList: cauHoiList,
+                        answers: answers,
+                        dapAnDungList: dapAnDungList,
+                      ),
                     ),
-                  ),
-                );
-              },
-              style: ElevatedButton.styleFrom(
-                foregroundColor: Colors.white, backgroundColor: Colors.blue,
+                  );
+                },
+                style: ElevatedButton.styleFrom(
+                  foregroundColor: Colors.white, backgroundColor: Colors.blue,
+                ),
+                child: const Text('Xem lại bài thi'),
               ),
-              child: const Text('Xem lại bài thi'),
-            ),
           ],
         ),
       ),

@@ -1,3 +1,5 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'dart:async';
 import 'package:multiple_choice_exam/database/databaseService.dart';
@@ -15,10 +17,29 @@ class _ExamState extends State<Exam> {
   List<Map<String, dynamic>> openTests = [];
   bool isLoading = true;
 
+  String? maSoSinhVien;
+
   @override
   void initState() {
     super.initState();
+    fetchStudentData();
     fetchOpenTests();
+  }
+
+  Future<void> fetchStudentData() async {
+    User? user = FirebaseAuth.instance.currentUser;
+    if (user != null) {
+      DocumentSnapshot studentSnapshot = await FirebaseFirestore.instance
+          .collection('SinhVien')
+          .doc(user.uid)
+          .get();
+      if (studentSnapshot.exists) {
+        Map<String, dynamic> studentData = studentSnapshot.data() as Map<String, dynamic>;
+        setState(() {
+          maSoSinhVien = studentData['maSoSinhVien'];
+        });
+      }
+    }
   }
 
   @override
@@ -42,13 +63,60 @@ class _ExamState extends State<Exam> {
               title: Text(test['tenBaiThi']),
               subtitle: Text('Thời gian làm bài: ${test['thoiGianLamBai']} phút'),
               trailing: ElevatedButton(
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => TestScreen(maBaiThi: test['maBaiThi'], thoiGianLamBai: test['thoiGianLamBai']),
-                    ),
-                  );
+                onPressed: () async {
+                  if (maSoSinhVien != null) {
+                    int soLanLamBai = await DatabaseService.getSoLanLamBaiSinhVien(
+                      maSoSinhVien!,
+                      test['maBaiThi'],
+                    );
+
+                    print(soLanLamBai);
+                    if (soLanLamBai >= test['soLanLamBai']) {
+                      showDialog(
+                        context: context,
+                        builder: (context) => AlertDialog(
+                          title: Text('Thông báo'),
+                          content: Text('Bạn đã thực hiện quá số lần làm bài.'),
+                          actions: <Widget>[
+                            TextButton(
+                              onPressed: () {
+                                Navigator.of(context).pop();
+                              },
+                              child: Text('OK'),
+                            ),
+                          ],
+                        ),
+                      );
+                    } else {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => TestScreen(
+                            maBaiThi: test['maBaiThi'],
+                            thoiGianLamBai: test['thoiGianLamBai'],
+                            soLanLamBai: soLanLamBai,
+                            choPhepXemLai: test['choPhepXemLai'],
+                          ),
+                        ),
+                      );
+                    }
+                  } else {
+                    showDialog(
+                      context: context,
+                      builder: (context) => AlertDialog(
+                        title: Text('Lỗi'),
+                        content: Text('Không thể lấy thông tin sinh viên.'),
+                        actions: <Widget>[
+                          TextButton(
+                            onPressed: () {
+                              Navigator.of(context).pop();
+                            },
+                            child: Text('OK'),
+                          ),
+                        ],
+                      ),
+                    );
+                  }
                 },
                 child: const Text('Bắt đầu'),
               ),

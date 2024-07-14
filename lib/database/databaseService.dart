@@ -2,7 +2,7 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 
 class DatabaseService {
-  static const String ipName = '192.168.1.3';
+  static const String ipName = '192.168.1.8';
   static const String port = '2612';
   static const String baseUrl = 'http://$ipName:$port';
 
@@ -505,6 +505,26 @@ class DatabaseService {
       return response.body;
     } else {
       throw Exception('Failed to insert review test');
+    }
+  }
+
+  static Future<int> getSoLanLamBaiSinhVien(String maSoSinhVien, int maBaiThi) async {
+    final response = await http.post(
+      Uri.parse('$baseUrl/getSoLanLamBaiSinhVien'),
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+      },
+      body: jsonEncode(<String, dynamic>{
+        'maSoSinhVien': maSoSinhVien,
+        'maBaiThi': maBaiThi,
+      }),
+    );
+
+    if (response.statusCode == 200) {
+      final responseData = jsonDecode(response.body);
+      return responseData['soLanLamBai'];
+    } else {
+      throw Exception('Failed to load number of attempts for the student');
     }
   }
 }
