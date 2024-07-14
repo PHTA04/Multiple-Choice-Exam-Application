@@ -4,6 +4,7 @@ import 'package:flutter/services.dart';
 import 'package:multiple_choice_exam/database/databaseService.dart';
 import 'package:multiple_choice_exam/ui_teacher/exam_management/create_exam.dart';
 import 'package:extended_masked_text/extended_masked_text.dart';
+import 'package:multiple_choice_exam/ui_teacher/question_bank/question_bank.dart';
 
 class CreateTest extends StatefulWidget {
   const CreateTest({super.key});
@@ -504,6 +505,21 @@ class _CreateTestState extends State<CreateTest> {
                     String gioBatDau = '${gioBatDauController.text}:00';
                     String gioKetThuc = '${gioKetThucController.text}:00';
 
+                    String formattedNgayBatDau = ngayBatDauController.text.replaceAll("/", "-");
+                    String formattedNgayKetThuc = ngayKetThucController.text.replaceAll("/", "-");
+                    String formattedGioBatDau = '${gioBatDauController.text}:00';
+                    String formattedGioKetThuc = '${gioKetThucController.text}:00';
+
+                    DateTime startDateTime = DateTime.parse("$formattedNgayBatDau $formattedGioBatDau");
+                    DateTime endDateTime = DateTime.parse("$formattedNgayKetThuc $formattedGioKetThuc");
+                    int durationMinutes = int.parse(thoiGianLamBaiController.text);
+                    DateTime endDateTimeCalculated = startDateTime.add(Duration(minutes: durationMinutes));
+
+                    if (endDateTime.isBefore(endDateTimeCalculated)) {
+                      _showErrorDialog("Lỗi", "Thời gian kết thúc không hợp lệ.");
+                      return;
+                    }
+
                     await DatabaseService.insertTest(
                       selectedDeThi,
                       tenBaiThiController.text,
@@ -745,8 +761,7 @@ class _CreateTestState extends State<CreateTest> {
           ),
           ElevatedButton(
             onPressed: () {
-              // Navigator.pop(context, false); // Trả về giá trị false khi chọn "Không"
-              Navigator.push(context, MaterialPageRoute(builder: (context) => const CreateTest()));
+              Navigator.push(context, MaterialPageRoute(builder: (context) => const QuestionBank()));
             },
             style: ElevatedButton.styleFrom(
               shape: RoundedRectangleBorder(
